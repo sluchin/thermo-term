@@ -5,6 +5,15 @@
         android:name="android.hardware.usb.host"
         android:required="true" />
 
+    <!-- Bluetooth (BLE) で ESP32C3 につなぐ. 位置情報は使わない (neverForLocation) -->
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="false" />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
     <application
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"

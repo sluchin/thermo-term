@@ -32,6 +32,9 @@ private enum class Tab {
 
     /** SD カードの起動のログ. */
     SD_LOG,
+
+    /** Bluetooth でつないで表示. */
+    BLE,
 }
 
 /**
@@ -54,12 +57,13 @@ class ScreenActions(
 )
 
 /**
- * 接続の状態と、3 つのタブ (「WiFi」と「Serial」と「SD log」) を並べた画面.
+ * 接続の状態と、4 つのタブ (「WiFi」と「Serial」と「SD log」と「BLE」) を並べた画面.
  *
  * 「WiFi」のタブは、SSID とパスワードの入力と、切り替えと戻すボタン. 入力欄には、ビルドのときに
  * local.properties で渡した値 (thermoterm.ssid と thermoterm.psk) が入る.
  * 「Serial」のタブは、ログとコマンドの入力 ([LogPanel]).
  * 「SD log」のタブは、SD カードに保存された起動のログ ([SdLogPanel]).
+ * 「BLE」のタブは、Bluetooth でつないで、温度と湿度を表示する ([BlePanel]).
  *
  * 表示の更新は, どのスレッドから呼んでもよい (画面のスレッドで実行する).
  *
@@ -95,9 +99,13 @@ class TetherScreen(
 
     /** 「SD log」のタブ. */
     val sdLogPanel = SdLogPanel(activity, actions.onLoadSdLog)
+
+    /** 「BLE」のタブ. */
+    val blePanel = BlePanel(activity)
     private val wifiTab = activity.button(R.string.tab_wifi) { selectTab(Tab.WIFI) }
     private val serialTab = activity.button(R.string.tab_serial) { selectTab(Tab.SERIAL) }
     private val sdLogTab = activity.button(R.string.tab_sdlog) { selectTab(Tab.SD_LOG) }
+    private val bleTab = activity.button(R.string.tab_ble) { selectTab(Tab.BLE) }
     private val wifiPanel =
         ScrollView(activity).apply {
             addView(
@@ -118,6 +126,7 @@ class TetherScreen(
         tabs.addView(wifiTab, weight)
         tabs.addView(serialTab, weight)
         tabs.addView(sdLogTab, weight)
+        tabs.addView(bleTab, weight)
         val fill = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
         root.addView(activity.button(R.string.connect, actions.onConnect))
         root.addView(statusView)
@@ -126,6 +135,7 @@ class TetherScreen(
         root.addView(wifiPanel, fill)
         root.addView(logPanel.view, fill)
         root.addView(sdLogPanel.view, fill)
+        root.addView(blePanel.view, fill)
         applySystemBarInsets()
         selectTab(Tab.WIFI)
         showDisconnected()
@@ -209,9 +219,11 @@ class TetherScreen(
         wifiPanel.visibility = if (tab == Tab.WIFI) View.VISIBLE else View.GONE
         logPanel.view.visibility = if (tab == Tab.SERIAL) View.VISIBLE else View.GONE
         sdLogPanel.view.visibility = if (tab == Tab.SD_LOG) View.VISIBLE else View.GONE
+        blePanel.view.visibility = if (tab == Tab.BLE) View.VISIBLE else View.GONE
         wifiTab.isEnabled = tab != Tab.WIFI
         serialTab.isEnabled = tab != Tab.SERIAL
         sdLogTab.isEnabled = tab != Tab.SD_LOG
+        bleTab.isEnabled = tab != Tab.BLE
     }
 
     /**

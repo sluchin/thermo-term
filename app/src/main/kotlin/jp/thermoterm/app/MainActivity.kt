@@ -113,9 +113,26 @@ class MainActivity : Activity() {
         registerReceiver(usbReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
     }
 
+    /**
+     * 権限を求めた結果を, BLE のタブに渡す.
+     *
+     * @param requestCode 要求の番号
+     * @param permissions 権限
+     * @param grantResults 権限ごとの結果
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        screen.blePanel.onPermissionResult(requestCode, grantResults)
+    }
+
     /** 画面を閉じるときに, 通信を止めて, 受け取りをやめる. */
     override fun onDestroy() {
         unregisterReceiver(usbReceiver)
+        screen.blePanel.release()
         disconnect()
         scope.cancel()
         super.onDestroy()
@@ -135,23 +152,6 @@ class MainActivity : Activity() {
             manager.requestPermission(device, pending)
         }
     }
-
-    /**
-     * スマートフォンから見えている USB の機器の一覧を、文字列にする (機器が見つからない原因の切り分け用).
-     *
-     * @param manager USB のマネージャ
-     * @return 機器の一覧の文字列
-     */
-    private fun describeUsb(manager: UsbManager): String =
-        describeUsbDevices(
-            manager.deviceList.values.map { device ->
-                UsbDeviceInfo(
-                    device.vendorId,
-                    device.productId,
-                    (0 until device.interfaceCount).map { device.getInterface(it).interfaceClass },
-                )
-            },
-        )
 
     /** 許可された機器のポートを開いて, 状態を読む. */
     private fun openPort() {
@@ -245,3 +245,20 @@ class MainActivity : Activity() {
         }
     }
 }
+
+/**
+ * スマートフォンから見えている USB の機器の一覧を、文字列にする (機器が見つからない原因の切り分け用).
+ *
+ * @param manager USB のマネージャ
+ * @return 機器の一覧の文字列
+ */
+private fun describeUsb(manager: UsbManager): String =
+    describeUsbDevices(
+        manager.deviceList.values.map { device ->
+            UsbDeviceInfo(
+                device.vendorId,
+                device.productId,
+                (0 until device.interfaceCount).map { device.getInterface(it).interfaceClass },
+            )
+        },
+    )
