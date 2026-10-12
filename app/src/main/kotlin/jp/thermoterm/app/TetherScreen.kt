@@ -67,8 +67,10 @@ class TetherScreen(
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         }
     private val tetherButton =
-        button(R.string.tether) { onTether(ssidInput.text.toString(), pskInput.text.toString()) }
-    private val restoreButton = button(R.string.restore, onRestore)
+        activity.button(
+            R.string.tether,
+        ) { onTether(ssidInput.text.toString(), pskInput.text.toString()) }
+    private val restoreButton = activity.button(R.string.restore, onRestore)
     private val commandInput =
         EditText(activity).apply {
             hint = activity.getString(R.string.command_hint)
@@ -80,8 +82,8 @@ class TetherScreen(
                 true
             }
         }
-    private val sendButton = button(R.string.send) { send(onSend) }
-    private val logButton = button(R.string.log_start, onToggleLog)
+    private val sendButton = activity.button(R.string.send) { send(onSend) }
+    private val logButton = activity.button(R.string.log_start, onToggleLog)
     private val logView =
         TextView(activity).apply {
             typeface = Typeface.MONOSPACE
@@ -92,7 +94,7 @@ class TetherScreen(
     init {
         val content = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL }
         content.addView(TextView(activity).apply { text = activity.getString(R.string.hint) })
-        content.addView(button(R.string.connect, onConnect))
+        content.addView(activity.button(R.string.connect, onConnect))
         content.addView(statusView)
         content.addView(ssidInput)
         content.addView(pskInput)
@@ -102,7 +104,7 @@ class TetherScreen(
         content.addView(commandInput)
         content.addView(sendButton)
         content.addView(logButton)
-        content.addView(button(R.string.log_clear) { logView.text = "" })
+        content.addView(activity.button(R.string.log_clear) { logView.text = "" })
         content.addView(logView)
         root.addView(content)
         applySystemBarInsets()
@@ -120,6 +122,15 @@ class TetherScreen(
         }
     }
 
+    /** 接続したので、ログとコマンドの送信を使えるようにする (機器の状態が読めなくても使える). */
+    fun showConnected() {
+        activity.runOnUiThread {
+            statusView.text = activity.getString(R.string.connected)
+            logButton.isEnabled = true
+            sendButton.isEnabled = true
+        }
+    }
+
     /**
      * 機器の状態を表示する (パスワードは, 設定されているかだけ).
      *
@@ -132,8 +143,6 @@ class TetherScreen(
         activity.runOnUiThread {
             statusView.text = text
             setActionsEnabled(true)
-            logButton.isEnabled = true
-            sendButton.isEnabled = true
             if (!status.tetherSupported) {
                 messageView.text = activity.getString(R.string.old_firmware)
             }
@@ -224,22 +233,6 @@ class TetherScreen(
     }
 
     /**
-     * ボタンを作る.
-     *
-     * @param textId ボタンの文字列のリソース
-     * @param onClick 押したときの処理
-     * @return ボタン
-     */
-    private fun button(
-        textId: Int,
-        onClick: () -> Unit,
-    ): Button =
-        Button(activity).apply {
-            text = activity.getString(textId)
-            setOnClickListener { onClick() }
-        }
-
-    /**
      * 内容が, システムバーとアクションバーの下に, 隠れないようにする.
      *
      * targetSdk 35 以上は, 画面が, システムバーの下まで広がる (edge-to-edge).
@@ -277,4 +270,21 @@ private fun inputErrorMessage(error: WifiInputError): Int =
         WifiInputError.SSID_TOO_LONG -> R.string.input_ssid_too_long
         WifiInputError.PSK_TOO_LONG -> R.string.input_psk_too_long
         WifiInputError.CONTROL_CHARACTER -> R.string.input_control
+    }
+
+/**
+ * ボタンを作る.
+ *
+ * @receiver 画面を表示する Activity
+ * @param textId ボタンの文字列のリソース
+ * @param onClick 押したときの処理
+ * @return ボタン
+ */
+private fun Activity.button(
+    textId: Int,
+    onClick: () -> Unit,
+): Button =
+    Button(this).apply {
+        text = getString(textId)
+        setOnClickListener { onClick() }
     }

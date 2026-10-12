@@ -137,6 +137,7 @@ class MainActivity : Activity() {
         disconnect()
         port = opened
         controller = TetherController(ShellSession(opened))
+        screen.showConnected()
         launchAction { control -> screen.showStatus(control.readStatus()) }
     }
 

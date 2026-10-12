@@ -11,6 +11,7 @@
     <string name="send">Send</string>
     <string name="tether">Switch to hotspot</string>
     <string name="restore">Restore original</string>
+    <string name="connected">Connected. Reading the device state…</string>
     <string name="not_connected">Not connected</string>
     <string name="no_device">No ESP32C3 found. Connect it with a USB-C data cable.</string>
     <string name="permission_denied">USB permission was denied.</string>
