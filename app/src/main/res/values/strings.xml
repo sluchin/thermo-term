@@ -3,6 +3,8 @@
     <string name="hint">1. Turn on the Wi-Fi hotspot of this phone (2.4 GHz band, WPA2). 2. Connect the ESP32C3 to this phone with a USB-C data cable. 3. Enter the hotspot SSID and password, and tap Switch to hotspot.</string>
     <string name="ssid_hint">Hotspot SSID</string>
     <string name="psk_hint">Hotspot password</string>
+    <string name="tab_wifi">WiFi</string>
+    <string name="tab_serial">Serial</string>
     <string name="connect">Connect / refresh</string>
     <string name="log_start">Start log</string>
     <string name="log_stop">Stop log</string>

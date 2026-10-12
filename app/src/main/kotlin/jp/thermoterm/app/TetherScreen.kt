@@ -7,12 +7,10 @@
 package jp.thermoterm.app
 
 import android.app.Activity
-import android.graphics.Typeface
 import android.text.InputType
 import android.util.TypedValue
+import android.view.View
 import android.view.WindowInsets
-import android.view.inputmethod.EditorInfo
-import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -24,17 +22,12 @@ import jp.thermoterm.core.WifiInputError
 /** 画面の端と, 内容の間の余白 (dp). */
 private const val CONTENT_PADDING_DP = 16
 
-/** ログの文字の大きさ (sp). */
-private const val LOG_TEXT_SIZE_SP = 11f
-
-/** 画面に残すログの最大の文字数. これを超えたら、古い方から捨てる. */
-private const val LOG_MAX_CHARS = 20000
-
 /**
- * 説明, 入力欄, ボタン, 機器の状態を並べた画面.
+ * 接続の状態と、2 つのタブ (「WiFi」と「Serial」) を並べた画面.
  *
- * SSID とパスワードの入力欄には, ビルドのときに local.properties で渡した値 (thermoterm.ssid と
- * thermoterm.psk) が入る.
+ * 「WiFi」のタブは、SSID とパスワードの入力と、切り替えと戻すボタン. 入力欄には、ビルドのときに
+ * local.properties で渡した値 (thermoterm.ssid と thermoterm.psk) が入る.
+ * 「Serial」のタブは、ログとコマンドの入力 ([LogPanel]).
  *
  * 表示の更新は, どのスレッドから呼んでもよい (画面のスレッドで実行する).
  *
@@ -53,13 +46,14 @@ class TetherScreen(
     onToggleLog: () -> Unit,
     onSend: (String) -> Unit,
 ) {
-    private val root = ScrollView(activity).apply { clipToPadding = false }
+    private val root = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL }
     private val statusView = TextView(activity)
     private val messageView = TextView(activity)
     private val ssidInput =
-        EditText(
-            activity,
-        ).apply { hint = activity.getString(R.string.ssid_hint) }
+        EditText(activity).apply {
+            hint = activity.getString(R.string.ssid_hint)
+            setText(BuildConfig.TETHER_SSID)
+        }
     private val pskInput =
         EditText(activity).apply {
             hint = activity.getString(R.string.psk_hint)
@@ -67,68 +61,58 @@ class TetherScreen(
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         }
     private val tetherButton =
-        activity.button(
-            R.string.tether,
-        ) { onTether(ssidInput.text.toString(), pskInput.text.toString()) }
-    private val restoreButton = activity.button(R.string.restore, onRestore)
-    private val commandInput =
-        EditText(activity).apply {
-            hint = activity.getString(R.string.command_hint)
-            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-            imeOptions = EditorInfo.IME_ACTION_SEND
-            isSingleLine = true
-            setOnEditorActionListener { _, _, _ ->
-                send(onSend)
-                true
-            }
+        activity.button(R.string.tether) {
+            onTether(ssidInput.text.toString(), pskInput.text.toString())
         }
-    private val sendButton = activity.button(R.string.send) { send(onSend) }
-    private val logButton = activity.button(R.string.log_start, onToggleLog)
-    private val logView =
-        TextView(activity).apply {
-            typeface = Typeface.MONOSPACE
-            textSize = LOG_TEXT_SIZE_SP
-            setTextIsSelectable(true)
+    private val restoreButton = activity.button(R.string.restore, onRestore)
+    private val logPanel = LogPanel(activity, onToggleLog, onSend)
+    private val wifiTab = activity.button(R.string.tab_wifi) { selectTab(wifiPanel = true) }
+    private val serialTab = activity.button(R.string.tab_serial) { selectTab(wifiPanel = false) }
+    private val wifiPanel =
+        ScrollView(activity).apply {
+            addView(
+                LinearLayout(activity).apply {
+                    orientation = LinearLayout.VERTICAL
+                    addView(TextView(activity).apply { text = activity.getString(R.string.hint) })
+                    addView(ssidInput)
+                    addView(pskInput)
+                    addView(tetherButton)
+                    addView(restoreButton)
+                },
+            )
         }
 
     init {
-        val content = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL }
-        content.addView(TextView(activity).apply { text = activity.getString(R.string.hint) })
-        content.addView(activity.button(R.string.connect, onConnect))
-        content.addView(statusView)
-        content.addView(ssidInput)
-        content.addView(pskInput)
-        content.addView(tetherButton)
-        content.addView(restoreButton)
-        content.addView(messageView)
-        content.addView(commandInput)
-        content.addView(sendButton)
-        content.addView(logButton)
-        content.addView(activity.button(R.string.log_clear) { logView.text = "" })
-        content.addView(logView)
-        root.addView(content)
+        val tabs = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL }
+        val weight = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        tabs.addView(wifiTab, weight)
+        tabs.addView(serialTab, weight)
+        val fill = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
+        root.addView(activity.button(R.string.connect, onConnect))
+        root.addView(statusView)
+        root.addView(messageView)
+        root.addView(tabs)
+        root.addView(wifiPanel, fill)
+        root.addView(logPanel.view, fill)
         applySystemBarInsets()
+        selectTab(wifiPanel = true)
         showDisconnected()
         activity.setContentView(root)
     }
 
-    /** 未接続の表示にして, 切り替えと戻すボタンを押せなくする. */
+    /** 未接続の表示にして, 切り替えと戻すボタンと、ログとコマンドの送信を押せなくする. */
     fun showDisconnected() {
         activity.runOnUiThread {
             statusView.text = activity.getString(R.string.not_connected)
             setActionsEnabled(false)
-            logButton.isEnabled = false
-            sendButton.isEnabled = false
         }
+        logPanel.setEnabled(false)
     }
 
     /** 接続したので、ログとコマンドの送信を使えるようにする (機器の状態が読めなくても使える). */
     fun showConnected() {
-        activity.runOnUiThread {
-            statusView.text = activity.getString(R.string.connected)
-            logButton.isEnabled = true
-            sendButton.isEnabled = true
-        }
+        activity.runOnUiThread { statusView.text = activity.getString(R.string.connected) }
+        logPanel.setEnabled(true)
     }
 
     /**
@@ -183,43 +167,29 @@ class TetherScreen(
     }
 
     /**
-     * 入力したコマンドを渡して、入力欄を空にする (空のときは、何もしない).
-     *
-     * @param onSend コマンドを受け取る処理
-     */
-    private fun send(onSend: (String) -> Unit) {
-        val command = commandInput.text.toString()
-        if (command.isNotEmpty()) {
-            commandInput.setText("")
-            onSend(command)
-        }
-    }
-
-    /**
-     * ログを画面の終わりに足す (多すぎたら、古い方を捨てる).
+     * ログを画面の終わりに足す (終わりまで見ていれば、自動でスクロールする).
      *
      * @param text 足す文字列
      */
-    fun appendLog(text: String) {
-        activity.runOnUiThread {
-            logView.append(text)
-            val length = logView.length()
-            if (length > LOG_MAX_CHARS) {
-                logView.text = logView.text.subSequence(length - LOG_MAX_CHARS, length)
-            }
-        }
-    }
+    fun appendLog(text: String) = logPanel.append(text)
 
     /**
      * ログのボタンの表示を、開始か停止にする.
      *
      * @param logging ログを読んでいるなら true
      */
-    fun setLogging(logging: Boolean) {
-        activity.runOnUiThread {
-            logButton.text =
-                activity.getString(if (logging) R.string.log_stop else R.string.log_start)
-        }
+    fun setLogging(logging: Boolean) = logPanel.setLogging(logging)
+
+    /**
+     * タブを切り替える (選んでいるタブのボタンは、押せなくする).
+     *
+     * @param wifiPanel true なら「WiFi」、false なら「Serial」
+     */
+    private fun selectTab(wifiPanel: Boolean) {
+        this.wifiPanel.visibility = if (wifiPanel) View.VISIBLE else View.GONE
+        logPanel.view.visibility = if (wifiPanel) View.GONE else View.VISIBLE
+        wifiTab.isEnabled = !wifiPanel
+        serialTab.isEnabled = wifiPanel
     }
 
     /**
@@ -270,21 +240,4 @@ private fun inputErrorMessage(error: WifiInputError): Int =
         WifiInputError.SSID_TOO_LONG -> R.string.input_ssid_too_long
         WifiInputError.PSK_TOO_LONG -> R.string.input_psk_too_long
         WifiInputError.CONTROL_CHARACTER -> R.string.input_control
-    }
-
-/**
- * ボタンを作る.
- *
- * @receiver 画面を表示する Activity
- * @param textId ボタンの文字列のリソース
- * @param onClick 押したときの処理
- * @return ボタン
- */
-private fun Activity.button(
-    textId: Int,
-    onClick: () -> Unit,
-): Button =
-    Button(this).apply {
-        text = getString(textId)
-        setOnClickListener { onClick() }
     }

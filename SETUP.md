@@ -78,6 +78,7 @@ scripts/cloud-docker.sh start        # Docker のデーモンを起動する
 | `core` の `WifiSettings.kt` | SSID (32 バイト以下) とパスワード (64 バイト以下) の確認。`thermo show` の解析 |
 | `core` の `streamLog` | ログを読み続けて、文字列で渡す(止めるのは取り消し)。文字の途中で切れた受信は、続きを待つ。色と CR は取り除く。`ShellSession` と同時には使わない |
 | `app` の `UsbCdcPort` | CDC のデータのインターフェース (クラス 0x0A) のバルク転送。制御線 (DTR と RTS) は、動かさない |
+| `app` の `TetherScreen` / `LogPanel` | 画面. 「WiFi」と「Serial」のタブ. ログは、終わりまで見ていれば、自動でスクロールする |
 | `app` の `MainActivity` | 機器の検出 (ベンダー ID `0x303A`)、使用許可、接続。USB を抜いたら、切断の表示。ログの開始と停止、入力したコマンドの送信(`writeLine`。応答は読まず、ログに出る) |
 
 ファームウェア (esp32-thermo-system) の `thermo tether <SSID> [パスワード]` は、今の SSID とパスワードを、フラッシュの 1 つの項目 (`tether_bak`) に保存してから、新しい値を設定します。すでに切り替えているときは、最初の元の設定を残します。`thermo restore` は、戻して、保存した元の設定を消します。
