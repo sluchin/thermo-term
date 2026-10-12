@@ -1,7 +1,26 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)
+}
+
+// テザリングの SSID とパスワードは、リポジトリに入れない.
+// local.properties (コミットしない. UTF-8) か、Gradle のプロパティ (-Pthermoterm.ssid=...) で渡す.
+// 渡した値は、APK に平文で入る (入力欄の初期値になる). その APK を、配布しない.
+val localProperties =
+    Properties().apply {
+        val file = rootProject.file("local.properties")
+        if (file.exists()) {
+            file.reader(Charsets.UTF_8).use { load(it) }
+        }
+    }
+
+/** 設定の値を, local.properties, Gradle のプロパティ, 既定値の順に探す. */
+fun configString(name: String): String {
+    val value = localProperties.getProperty(name) ?: providers.gradleProperty(name).orNull ?: ""
+    return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 }
 
 // Kotlin の警告が出たら, ビルドを失敗させる (core と同じ)
@@ -26,6 +45,13 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "0.1.0"
+
+        buildConfigField("String", "TETHER_SSID", configString("thermoterm.ssid"))
+        buildConfigField("String", "TETHER_PSK", configString("thermoterm.psk"))
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     compileOptions {

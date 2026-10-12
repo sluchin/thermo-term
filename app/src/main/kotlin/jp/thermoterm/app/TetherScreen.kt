@@ -25,6 +25,9 @@ private const val CONTENT_PADDING_DP = 16
 /**
  * 説明, 入力欄, ボタン, 機器の状態を並べた画面.
  *
+ * SSID とパスワードの入力欄には, ビルドのときに local.properties で渡した値 (thermoterm.ssid と
+ * thermoterm.psk) が入る.
+ *
  * 表示の更新は, どのスレッドから呼んでもよい (画面のスレッドで実行する).
  *
  * @property activity 画面を表示する Activity
@@ -48,6 +51,7 @@ class TetherScreen(
     private val pskInput =
         EditText(activity).apply {
             hint = activity.getString(R.string.psk_hint)
+            setText(BuildConfig.TETHER_PSK)
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         }
     private val tetherButton =

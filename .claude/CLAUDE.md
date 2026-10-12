@@ -66,6 +66,8 @@ scripts/cloud-docker.sh start          # Docker のデーモンを起動する (
 
 - **WiFi のパスワードを、アプリに保存しない。ログに出さない。リポジトリに入れない。** 入力欄は、パスワード用の入力にする。署名の鍵 (`*.jks`、`*.keystore`) も、コミットしない。
 
+- テザリングの SSID とパスワードは、`local.properties` の `thermoterm.ssid` と `thermoterm.psk` (または `-P`) で渡す。`BuildConfig` に入り、入力欄の初期値になる (APK に平文で入るので、配布しない)。リポジトリには、実際の値を書かない。
+
 ## コーディング規約
 
 ktlint (Kotlin 公式のスタイル) と、detekt (既定の規則) に従う。迷ったら、ツールが正しい。Kotlin 公式のコーディング規約へのリンクは、`CODING_STYLE.md`。

@@ -60,6 +60,10 @@ scripts/cloud-docker.sh start        # Docker のデーモンを起動する
 
 通信できるドメインは、環境の「Network access」で決まります (`dl.google.com` と `maven-central.storage-download.googleapis.com` が要ります)。詳しくは、thermon の `SETUP.md` と `.claude/CLAUDE.md` です。
 
+## SSID とパスワードの設定
+
+`local.properties` (コミットしない) の `thermoterm.ssid` と `thermoterm.psk`、または Gradle のプロパティ (`-Pthermoterm.ssid=...`) で渡すと、`BuildConfig.TETHER_SSID` と `TETHER_PSK` になり、入力欄の初期値になります。書き込みは、ボタンを押したときです。値は APK に平文で入るので、配布しません。
+
 ## CI (GitHub Actions)
 
 `.github/workflows/build.yml`。push (`main`、`ccr-*`) と PR で、開発用のイメージ (レイヤーを Actions のキャッシュに保存) を作り、`build` `test` `coverage` `format` `analyze` `docs` を実行します。ログは、アーティファクト (`<サービス名>_log`) に保存します (APK は、保存しません)。`docs` は、main への push のときだけ、GitHub Pages に公開します (Settings > Pages > Source を「GitHub Actions」にしておく)。`cleanup` が、3 日より前の実行を、削除します。**CI は、まだ実行していません** (リポジトリに、push してから確認する)。
