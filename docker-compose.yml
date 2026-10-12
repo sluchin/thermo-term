@@ -1,0 +1,71 @@
+# 共通の設定. コンテナは, ホストのユーザーで実行する (生成物が, root 所有にならないように).
+# UID と GID は, シェルでエクスポートしておく (SETUP.md)
+x-common: &common
+  build:
+    context: .
+    dockerfile: Dockerfile
+    target: dev
+  image: thermo-term-dev:latest
+  volumes:
+    - .:/workspace
+    # Gradle のキャッシュ. 既定は, ボリューム gradle-cache. CI は, GRADLE_HOME_DIR に, キャッシュするディレクトリ
+    # (絶対パス) を指定して, ボリュームの代わりに, そのディレクトリを使う (.github/actions/gradle-cache)
+    - ${GRADLE_HOME_DIR:-gradle-cache}:/gradle-home
+  working_dir: /workspace
+  user: "${UID:-0}:${GID:-0}"
+  environment:
+    - HOME=/tmp
+    # デバッグ用の署名の鍵 (debug.keystore) を, ボリュームに残す. 残さないと, コンテナを起動するたびに,
+    # 鍵が作り直されて, 署名が変わり, 実機やエミュレータに, 上書きでインストールできない
+    - ANDROID_USER_HOME=/gradle-home/android
+
+services:
+  # 開発シェル
+  dev:
+    <<: *common
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  # デバッグ用の APK をビルドする (app/build/outputs/apk/debug/app-debug.apk). Kotlin の警告が出たら失敗する
+  build:
+    <<: *common
+    command: ./gradlew --no-daemon :app:assembleDebug
+
+  # 単体テストを実行する
+  test:
+    <<: *common
+    command: ./gradlew --no-daemon :core:test :app:testDebugUnitTest
+
+  # core の行と分岐のカバレッジが 100% でなければ失敗する
+  coverage:
+    <<: *common
+    command: ./gradlew --no-daemon :core:test :core:jacocoTestCoverageVerification
+
+  # 整形の確認 (整形が必要なら失敗する)
+  format:
+    <<: *common
+    command: ./gradlew --no-daemon --continue :core:ktlintCheck :app:ktlintCheck
+
+  # 整形して, ファイルを書き換える (format が失敗したときに実行する)
+  format-fix:
+    <<: *common
+    command: ./gradlew --no-daemon --continue :core:ktlintFormat :app:ktlintFormat
+
+  # 静的解析 (detekt と Android Lint). 指摘があれば失敗する
+  analyze:
+    <<: *common
+    command: ./gradlew --no-daemon --continue :core:detekt :app:detekt :app:lintDebug
+
+  # ドキュメント (HTML) を生成する (core/build/dokka/html/index.html). 警告があれば失敗する
+  docs:
+    <<: *common
+    command: ./gradlew --no-daemon :core:dokkaGenerate
+
+  # 生成物 (build/ と .gradle/ と .kotlin/) を消す. Gradle のキャッシュ (ボリューム) は, 消さない
+  clean:
+    <<: *common
+    command: sh -c "rm -rf build core/build app/build .gradle .kotlin && echo 'Removed the build outputs'"
+
+volumes:
+  gradle-cache:

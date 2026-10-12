@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hint">1. Turn on the Wi-Fi hotspot of this phone (2.4 GHz band, WPA2). 2. Connect the ESP32C3 to this phone with a USB-C data cable. 3. Enter the hotspot SSID and password, and tap Switch to hotspot.</string>
+    <string name="ssid_hint">Hotspot SSID</string>
+    <string name="psk_hint">Hotspot password</string>
+    <string name="connect">Connect / refresh</string>
+    <string name="tether">Switch to hotspot</string>
+    <string name="restore">Restore original</string>
+    <string name="not_connected">Not connected</string>
+    <string name="no_device">No ESP32C3 found. Connect it with a USB-C data cable.</string>
+    <string name="permission_denied">USB permission was denied.</string>
+    <string name="open_failed">Could not open the USB serial port.</string>
+    <string name="status">Device SSID: %1$s\nPassword: %2$s\nOriginal SSID: %3$s</string>
+    <string name="psk_set">set</string>
+    <string name="psk_empty">(empty)</string>
+    <string name="no_backup">(not switched)</string>
+    <string name="old_firmware">The firmware does not support switching. Update it.</string>
+    <string name="working">Working…</string>
+    <string name="done_tether">Switched. The device reconnects with the hotspot. The original settings are kept in the device.</string>
+    <string name="done_restore">Restored the original SSID and password.</string>
+    <string name="input_ssid_empty">Enter the SSID.</string>
+    <string name="input_ssid_too_long">The SSID is too long (32 bytes at most).</string>
+    <string name="input_psk_too_long">The password is too long (64 bytes at most).</string>
+    <string name="input_control">The SSID and the password cannot contain control characters.</string>
+    <string name="failed">The device refused \"%1$s\" (error %2$s).</string>
+    <string name="error">Error: %1$s</string>
+</resources>
