@@ -55,7 +55,7 @@ scripts/cloud-docker.sh start          # Docker のデーモンを起動する (
 
 ## プロジェクト構成
 
-- `core/`: 純粋な Kotlin (Android に依存しない)。機器のシェルとの通信 (`SerialPort`、`ShellSession`)、`thermo tether` / `restore` / `apply` / `show` の流れ (`TetherController`)、SSID とパスワードの入力の確認と `thermo show` の解析 (`WifiSettings.kt`)、引数の引用符 (`ShellText.kt`)。**単体テストで、行と分岐のカバレッジ 100%。**
+- `core/`: 純粋な Kotlin (Android に依存しない)。機器のシェルとの通信 (`SerialPort`、`ShellSession`)、`thermo tether` / `restore` / `apply` / `show` の流れ (`TetherController`)、SSID とパスワードの入力の確認と `thermo show` の解析 (`WifiSettings.kt`)、引数の引用符 (`ShellText.kt`)、ログの読み取り (`LogStream.kt`。`ShellSession` と同じポートを同時に読まない)。**単体テストで、行と分岐のカバレッジ 100%。**
 - `app/`: Android。USB の CDC ACM の通信 (`UsbCdcPort`)、画面 (`TetherScreen`)、使用許可と接続 (`MainActivity`) だけの、薄い層 (UI は、単体テストの対象外)。
 - `gradle/libs.versions.toml`: ライブラリとプラグインの版 (版カタログ)。版を変えるときは、ここだけ。
 - `config/detekt/detekt.yml`: detekt の規則 (既定に、上書きするものだけ)。

@@ -12,15 +12,18 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Bundle
 import jp.thermoterm.core.ShellSession
 import jp.thermoterm.core.TetherController
+import jp.thermoterm.core.streamLog
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 
 /** USB の使用許可の結果を受け取る, ブロードキャストの名前. */
@@ -38,6 +41,7 @@ class MainActivity : Activity() {
     private lateinit var screen: TetherScreen
     private var port: UsbCdcPort? = null
     private var controller: TetherController? = null
+    private var logJob: Job? = null
 
     /** 使用許可の結果と, 機器が抜かれたことを受け取る. */
     private val usbReceiver =
@@ -80,6 +84,7 @@ class MainActivity : Activity() {
                 onConnect = ::connect,
                 onTether = ::tether,
                 onRestore = ::restore,
+                onToggleLog = ::toggleLog,
             )
         val filter =
             IntentFilter(ACTION_USB_PERMISSION).apply {
@@ -99,7 +104,7 @@ class MainActivity : Activity() {
     /** 機器を探して, 使う許可を求める (許可があれば, すぐに開く). */
     private fun connect() {
         val manager = getSystemService(UsbManager::class.java)
-        val device = findDevice(manager)
+        val device = UsbCdcPort.findDevice(manager)
         if (device == null) {
             screen.showMessage(getString(R.string.no_device))
         } else if (manager.hasPermission(device)) {
@@ -111,21 +116,10 @@ class MainActivity : Activity() {
         }
     }
 
-    /**
-     * つながっている USB の機器から, ESP32C3 (Espressif の CDC ACM) を探す.
-     *
-     * @param manager USB のマネージャ
-     * @return 機器. なければ null
-     */
-    private fun findDevice(manager: UsbManager): UsbDevice? =
-        manager.deviceList.values.firstOrNull {
-            it.vendorId == ESPRESSIF_VENDOR_ID && UsbCdcPort.findDataInterface(it) != null
-        }
-
     /** 許可された機器のポートを開いて, 状態を読む. */
     private fun openPort() {
         val manager = getSystemService(UsbManager::class.java)
-        val opened = findDevice(manager)?.let { UsbCdcPort.open(manager, it) }
+        val opened = UsbCdcPort.findDevice(manager)?.let { UsbCdcPort.open(manager, it) }
         if (opened == null) {
             screen.showMessage(getString(R.string.open_failed))
             return
@@ -133,20 +127,18 @@ class MainActivity : Activity() {
         disconnect()
         port = opened
         controller = TetherController(ShellSession(opened))
-        refresh()
+        launchAction { control -> screen.showStatus(control.readStatus()) }
     }
 
     /** ポートを閉じて, 未接続の表示に戻す. */
     private fun disconnect() {
+        logJob?.cancel()
+        logJob = null
+        screen.setLogging(false)
         port?.close()
         port = null
         controller = null
         screen.showDisconnected()
-    }
-
-    /** 機器の状態を読んで, 表示する. */
-    private fun refresh() {
-        launchAction { control -> screen.showStatus(control.readStatus()) }
     }
 
     /**
@@ -178,10 +170,43 @@ class MainActivity : Activity() {
         val control = controller ?: return
         screen.showMessage(getString(R.string.working))
         scope.launch {
+            stopLog()
             // 画面に出すのは, メッセージだけ (パスワードを含む応答は, 出さない)
             runCatching { action(control) }.onFailure {
                 screen.showMessage(getString(R.string.error, it.message ?: it.javaClass.simpleName))
             }
         }
+    }
+
+    /** ログの読み取りを、始める. 読んでいるときは、止める. */
+    private fun toggleLog() {
+        val serial = port ?: return
+        if (logJob != null) {
+            logJob?.cancel()
+            logJob = null
+            screen.setLogging(false)
+            return
+        }
+        screen.setLogging(true)
+        logJob =
+            scope.launch {
+                runCatching { streamLog(serial, screen::appendLog) }.onFailure {
+                    if (it !is CancellationException) {
+                        screen.showMessage(
+                            getString(
+                                R.string.error,
+                                it.message ?: it.javaClass.simpleName,
+                            ),
+                        )
+                    }
+                }
+            }
+    }
+
+    /** ログの読み取りが動いていれば、終わるまで待って止める (コマンドの応答と、混ざらないように). */
+    private suspend fun stopLog() {
+        logJob?.cancelAndJoin()
+        logJob = null
+        screen.setLogging(false)
     }
 }

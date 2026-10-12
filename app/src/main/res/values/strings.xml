@@ -4,6 +4,9 @@
     <string name="ssid_hint">Hotspot SSID</string>
     <string name="psk_hint">Hotspot password</string>
     <string name="connect">Connect / refresh</string>
+    <string name="log_start">Start log</string>
+    <string name="log_stop">Stop log</string>
+    <string name="log_clear">Clear log</string>
     <string name="tether">Switch to hotspot</string>
     <string name="restore">Restore original</string>
     <string name="not_connected">Not connected</string>

@@ -76,6 +76,17 @@ class UsbCdcPort private constructor(
     }
 
     companion object {
+        /**
+         * つながっている USB の機器から、ESP32C3 (Espressif の CDC ACM) を探す.
+         *
+         * @param manager USB のマネージャ
+         * @return 機器. なければ null
+         */
+        fun findDevice(manager: UsbManager): UsbDevice? =
+            manager.deviceList.values.firstOrNull {
+                it.vendorId == ESPRESSIF_VENDOR_ID && findDataInterface(it) != null
+            }
+
         /** 送信 1 回の待ち時間 (ミリ秒). */
         private const val WRITE_TIMEOUT_MILLIS = 1000
 

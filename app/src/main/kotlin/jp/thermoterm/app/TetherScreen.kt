@@ -7,6 +7,7 @@
 package jp.thermoterm.app
 
 import android.app.Activity
+import android.graphics.Typeface
 import android.text.InputType
 import android.util.TypedValue
 import android.view.WindowInsets
@@ -22,6 +23,12 @@ import jp.thermoterm.core.WifiInputError
 /** 画面の端と, 内容の間の余白 (dp). */
 private const val CONTENT_PADDING_DP = 16
 
+/** ログの文字の大きさ (sp). */
+private const val LOG_TEXT_SIZE_SP = 11f
+
+/** 画面に残すログの最大の文字数. これを超えたら、古い方から捨てる. */
+private const val LOG_MAX_CHARS = 20000
+
 /**
  * 説明, 入力欄, ボタン, 機器の状態を並べた画面.
  *
@@ -34,12 +41,14 @@ private const val CONTENT_PADDING_DP = 16
  * @param onConnect 「接続」を押したときの処理
  * @param onTether 「テザリングに切り替える」を押したときの処理 (SSID とパスワードを受け取る)
  * @param onRestore 「元に戻す」を押したときの処理
+ * @param onToggleLog 「ログの開始・停止」を押したときの処理
  */
 class TetherScreen(
     private val activity: Activity,
     onConnect: () -> Unit,
     onTether: (String, String) -> Unit,
     onRestore: () -> Unit,
+    onToggleLog: () -> Unit,
 ) {
     private val root = ScrollView(activity).apply { clipToPadding = false }
     private val statusView = TextView(activity)
@@ -57,6 +66,13 @@ class TetherScreen(
     private val tetherButton =
         button(R.string.tether) { onTether(ssidInput.text.toString(), pskInput.text.toString()) }
     private val restoreButton = button(R.string.restore, onRestore)
+    private val logButton = button(R.string.log_start, onToggleLog)
+    private val logView =
+        TextView(activity).apply {
+            typeface = Typeface.MONOSPACE
+            textSize = LOG_TEXT_SIZE_SP
+            setTextIsSelectable(true)
+        }
 
     init {
         val content = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL }
@@ -68,6 +84,9 @@ class TetherScreen(
         content.addView(tetherButton)
         content.addView(restoreButton)
         content.addView(messageView)
+        content.addView(logButton)
+        content.addView(button(R.string.log_clear) { logView.text = "" })
+        content.addView(logView)
         root.addView(content)
         applySystemBarInsets()
         showDisconnected()
@@ -79,6 +98,7 @@ class TetherScreen(
         activity.runOnUiThread {
             statusView.text = activity.getString(R.string.not_connected)
             setActionsEnabled(false)
+            logButton.isEnabled = false
         }
     }
 
@@ -94,6 +114,7 @@ class TetherScreen(
         activity.runOnUiThread {
             statusView.text = text
             setActionsEnabled(true)
+            logButton.isEnabled = true
             if (!status.tetherSupported) {
                 messageView.text = activity.getString(R.string.old_firmware)
             }
@@ -130,6 +151,33 @@ class TetherScreen(
                 )
             is ActionResult.Failed ->
                 showMessage(activity.getString(R.string.failed, result.command, result.code ?: "?"))
+        }
+    }
+
+    /**
+     * ログを画面の終わりに足す (多すぎたら、古い方を捨てる).
+     *
+     * @param text 足す文字列
+     */
+    fun appendLog(text: String) {
+        activity.runOnUiThread {
+            logView.append(text)
+            val length = logView.length()
+            if (length > LOG_MAX_CHARS) {
+                logView.text = logView.text.subSequence(length - LOG_MAX_CHARS, length)
+            }
+        }
+    }
+
+    /**
+     * ログのボタンの表示を、開始か停止にする.
+     *
+     * @param logging ログを読んでいるなら true
+     */
+    fun setLogging(logging: Boolean) {
+        activity.runOnUiThread {
+            logButton.text =
+                activity.getString(if (logging) R.string.log_stop else R.string.log_start)
         }
     }
 
