@@ -22,29 +22,53 @@ import jp.thermoterm.core.WifiInputError
 /** 画面の端と, 内容の間の余白 (dp). */
 private const val CONTENT_PADDING_DP = 16
 
+/** 画面のタブ. */
+private enum class Tab {
+    /** SSID とパスワードの入力. */
+    WIFI,
+
+    /** ログとコマンド. */
+    SERIAL,
+
+    /** SD カードの起動のログ. */
+    SD_LOG,
+}
+
 /**
- * 接続の状態と、2 つのタブ (「WiFi」と「Serial」) を並べた画面.
+ * 画面のボタンを押したときの処理.
+ *
+ * @property onConnect 「接続」
+ * @property onTether 「テザリングに切り替える」(SSID とパスワードを受け取る)
+ * @property onRestore 「元に戻す」
+ * @property onToggleLog 「ログの開始・停止」
+ * @property onSend 「送信」(入力したコマンドを受け取る)
+ * @property onLoadSdLog 「SD カードの起動のログを読み込む」
+ */
+class ScreenActions(
+    val onConnect: () -> Unit,
+    val onTether: (String, String) -> Unit,
+    val onRestore: () -> Unit,
+    val onToggleLog: () -> Unit,
+    val onSend: (String) -> Unit,
+    val onLoadSdLog: () -> Unit,
+)
+
+/**
+ * 接続の状態と、3 つのタブ (「WiFi」と「Serial」と「SD log」) を並べた画面.
  *
  * 「WiFi」のタブは、SSID とパスワードの入力と、切り替えと戻すボタン. 入力欄には、ビルドのときに
  * local.properties で渡した値 (thermoterm.ssid と thermoterm.psk) が入る.
  * 「Serial」のタブは、ログとコマンドの入力 ([LogPanel]).
+ * 「SD log」のタブは、SD カードに保存された起動のログ ([SdLogPanel]).
  *
  * 表示の更新は, どのスレッドから呼んでもよい (画面のスレッドで実行する).
  *
  * @property activity 画面を表示する Activity
- * @param onConnect 「接続」を押したときの処理
- * @param onTether 「テザリングに切り替える」を押したときの処理 (SSID とパスワードを受け取る)
- * @param onRestore 「元に戻す」を押したときの処理
- * @param onToggleLog 「ログの開始・停止」を押したときの処理
- * @param onSend 「送信」を押したときの処理 (入力したコマンドを受け取る)
+ * @param actions ボタンを押したときの処理
  */
 class TetherScreen(
     private val activity: Activity,
-    onConnect: () -> Unit,
-    onTether: (String, String) -> Unit,
-    onRestore: () -> Unit,
-    onToggleLog: () -> Unit,
-    onSend: (String) -> Unit,
+    actions: ScreenActions,
 ) {
     private val root = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL }
     private val statusView = TextView(activity)
@@ -62,12 +86,18 @@ class TetherScreen(
         }
     private val tetherButton =
         activity.button(R.string.tether) {
-            onTether(ssidInput.text.toString(), pskInput.text.toString())
+            actions.onTether(ssidInput.text.toString(), pskInput.text.toString())
         }
-    private val restoreButton = activity.button(R.string.restore, onRestore)
-    private val logPanel = LogPanel(activity, onToggleLog, onSend)
-    private val wifiTab = activity.button(R.string.tab_wifi) { selectTab(wifiPanel = true) }
-    private val serialTab = activity.button(R.string.tab_serial) { selectTab(wifiPanel = false) }
+    private val restoreButton = activity.button(R.string.restore, actions.onRestore)
+
+    /** 「Serial」のタブ. */
+    val logPanel = LogPanel(activity, actions.onToggleLog, actions.onSend)
+
+    /** 「SD log」のタブ. */
+    val sdLogPanel = SdLogPanel(activity, actions.onLoadSdLog)
+    private val wifiTab = activity.button(R.string.tab_wifi) { selectTab(Tab.WIFI) }
+    private val serialTab = activity.button(R.string.tab_serial) { selectTab(Tab.SERIAL) }
+    private val sdLogTab = activity.button(R.string.tab_sdlog) { selectTab(Tab.SD_LOG) }
     private val wifiPanel =
         ScrollView(activity).apply {
             addView(
@@ -87,15 +117,17 @@ class TetherScreen(
         val weight = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         tabs.addView(wifiTab, weight)
         tabs.addView(serialTab, weight)
+        tabs.addView(sdLogTab, weight)
         val fill = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
-        root.addView(activity.button(R.string.connect, onConnect))
+        root.addView(activity.button(R.string.connect, actions.onConnect))
         root.addView(statusView)
         root.addView(messageView)
         root.addView(tabs)
         root.addView(wifiPanel, fill)
         root.addView(logPanel.view, fill)
+        root.addView(sdLogPanel.view, fill)
         applySystemBarInsets()
-        selectTab(wifiPanel = true)
+        selectTab(Tab.WIFI)
         showDisconnected()
         activity.setContentView(root)
     }
@@ -107,12 +139,14 @@ class TetherScreen(
             setActionsEnabled(false)
         }
         logPanel.setEnabled(false)
+        sdLogPanel.setEnabled(false)
     }
 
     /** 接続したので、ログとコマンドの送信を使えるようにする (機器の状態が読めなくても使える). */
     fun showConnected() {
         activity.runOnUiThread { statusView.text = activity.getString(R.string.connected) }
         logPanel.setEnabled(true)
+        sdLogPanel.setEnabled(true)
     }
 
     /**
@@ -167,29 +201,17 @@ class TetherScreen(
     }
 
     /**
-     * ログを画面の終わりに足す (終わりまで見ていれば、自動でスクロールする).
-     *
-     * @param text 足す文字列
-     */
-    fun appendLog(text: String) = logPanel.append(text)
-
-    /**
-     * ログのボタンの表示を、開始か停止にする.
-     *
-     * @param logging ログを読んでいるなら true
-     */
-    fun setLogging(logging: Boolean) = logPanel.setLogging(logging)
-
-    /**
      * タブを切り替える (選んでいるタブのボタンは、押せなくする).
      *
-     * @param wifiPanel true なら「WiFi」、false なら「Serial」
+     * @param tab 表示するタブ
      */
-    private fun selectTab(wifiPanel: Boolean) {
-        this.wifiPanel.visibility = if (wifiPanel) View.VISIBLE else View.GONE
-        logPanel.view.visibility = if (wifiPanel) View.GONE else View.VISIBLE
-        wifiTab.isEnabled = !wifiPanel
-        serialTab.isEnabled = wifiPanel
+    private fun selectTab(tab: Tab) {
+        wifiPanel.visibility = if (tab == Tab.WIFI) View.VISIBLE else View.GONE
+        logPanel.view.visibility = if (tab == Tab.SERIAL) View.VISIBLE else View.GONE
+        sdLogPanel.view.visibility = if (tab == Tab.SD_LOG) View.VISIBLE else View.GONE
+        wifiTab.isEnabled = tab != Tab.WIFI
+        serialTab.isEnabled = tab != Tab.SERIAL
+        sdLogTab.isEnabled = tab != Tab.SD_LOG
     }
 
     /**

@@ -16,6 +16,8 @@ import android.hardware.usb.UsbManager
 import android.os.Bundle
 import jp.thermoterm.core.ShellSession
 import jp.thermoterm.core.TetherController
+import jp.thermoterm.core.UsbDeviceInfo
+import jp.thermoterm.core.describeUsbDevices
 import jp.thermoterm.core.streamLog
 import jp.thermoterm.core.writeLine
 import kotlinx.coroutines.CancellationException
@@ -82,19 +84,27 @@ class MainActivity : Activity() {
         screen =
             TetherScreen(
                 this,
-                onConnect = ::connect,
-                onTether = { ssid, psk ->
-                    launchAction { control ->
-                        screen.showResult(control.tether(ssid, psk), R.string.done_tether)
-                    }
-                },
-                onRestore = {
-                    launchAction { control ->
-                        screen.showResult(control.restore(), R.string.done_restore)
-                    }
-                },
-                onToggleLog = ::toggleLog,
-                onSend = ::sendCommand,
+                ScreenActions(
+                    onConnect = ::connect,
+                    onTether = { ssid, psk ->
+                        launchAction { control ->
+                            screen.showResult(control.tether(ssid, psk), R.string.done_tether)
+                        }
+                    },
+                    onRestore = {
+                        launchAction { control ->
+                            screen.showResult(control.restore(), R.string.done_restore)
+                        }
+                    },
+                    onToggleLog = ::toggleLog,
+                    onSend = ::sendCommand,
+                    onLoadSdLog = {
+                        launchAction { control ->
+                            screen.sdLogPanel.show(control.readBootLog())
+                            screen.showMessage(getString(R.string.done_sdlog))
+                        }
+                    },
+                ),
             )
         val filter =
             IntentFilter(ACTION_USB_PERMISSION).apply {
@@ -116,7 +126,7 @@ class MainActivity : Activity() {
         val manager = getSystemService(UsbManager::class.java)
         val device = UsbCdcPort.findDevice(manager)
         if (device == null) {
-            screen.showMessage(getString(R.string.no_device))
+            screen.showMessage(getString(R.string.no_device) + "\n" + describeUsb(manager))
         } else if (manager.hasPermission(device)) {
             openPort()
         } else {
@@ -125,6 +135,23 @@ class MainActivity : Activity() {
             manager.requestPermission(device, pending)
         }
     }
+
+    /**
+     * スマートフォンから見えている USB の機器の一覧を、文字列にする (機器が見つからない原因の切り分け用).
+     *
+     * @param manager USB のマネージャ
+     * @return 機器の一覧の文字列
+     */
+    private fun describeUsb(manager: UsbManager): String =
+        describeUsbDevices(
+            manager.deviceList.values.map { device ->
+                UsbDeviceInfo(
+                    device.vendorId,
+                    device.productId,
+                    (0 until device.interfaceCount).map { device.getInterface(it).interfaceClass },
+                )
+            },
+        )
 
     /** 許可された機器のポートを開いて, 状態を読む. */
     private fun openPort() {
@@ -145,7 +172,7 @@ class MainActivity : Activity() {
     private fun disconnect() {
         logJob?.cancel()
         logJob = null
-        screen.setLogging(false)
+        screen.logPanel.setLogging(false)
         port?.close()
         port = null
         controller = null
@@ -175,13 +202,13 @@ class MainActivity : Activity() {
         if (logJob != null) {
             logJob?.cancel()
             logJob = null
-            screen.setLogging(false)
+            screen.logPanel.setLogging(false)
             return
         }
-        screen.setLogging(true)
+        screen.logPanel.setLogging(true)
         logJob =
             scope.launch {
-                runCatching { streamLog(serial, screen::appendLog) }.onFailure {
+                runCatching { streamLog(serial, screen.logPanel::append) }.onFailure {
                     if (it !is CancellationException) {
                         screen.showMessage(
                             getString(
@@ -198,7 +225,7 @@ class MainActivity : Activity() {
     private suspend fun stopLog() {
         logJob?.cancelAndJoin()
         logJob = null
-        screen.setLogging(false)
+        screen.logPanel.setLogging(false)
     }
 
     /**

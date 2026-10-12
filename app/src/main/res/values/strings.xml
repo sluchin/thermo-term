@@ -5,6 +5,9 @@
     <string name="psk_hint">Hotspot password</string>
     <string name="tab_wifi">WiFi</string>
     <string name="tab_serial">Serial</string>
+    <string name="tab_sdlog">SD log</string>
+    <string name="sdlog_load">Load boot.log from SD</string>
+    <string name="sdlog_empty">The boot log is empty.</string>
     <string name="connect">Connect / refresh</string>
     <string name="log_start">Start log</string>
     <string name="log_stop">Stop log</string>
@@ -25,6 +28,7 @@
     <string name="old_firmware">The firmware does not support switching. Update it.</string>
     <string name="working">Working…</string>
     <string name="done_tether">Switched. The device reconnects with the hotspot. The original settings are kept in the device.</string>
+    <string name="done_sdlog">Loaded the boot log from the SD card.</string>
     <string name="done_restore">Restored the original SSID and password.</string>
     <string name="input_ssid_empty">Enter the SSID.</string>
     <string name="input_ssid_too_long">The SSID is too long (32 bytes at most).</string>

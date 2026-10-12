@@ -71,6 +71,14 @@ class TetherController(
         parseStatus(shell.execute("thermo show")) ?: throw ShellException("Not a Thermo device")
 
     /**
+     * SD カードに保存された, 起動のログを読む.
+     *
+     * @return ログの文字列 (ファイルがないときは、機器のエラーの文)
+     * @throws ShellException 機器が応答しない
+     */
+    suspend fun readBootLog(): String = jp.thermoterm.core.readBootLog(shell)
+
+    /**
      * テザリングの SSID とパスワードに切り替えて, 接続をやり直させる.
      *
      * 元の SSID とパスワードは, 機器が保存する (すでに切り替えているときは, 最初の元の設定を残す).

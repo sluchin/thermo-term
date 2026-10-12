@@ -130,4 +130,13 @@ class TetherControllerTest {
 
             assertEquals(ActionResult.Failed("restore", null), controller.restore())
         }
+
+    /** SD カードの起動のログを読む. */
+    @Test
+    fun readBootLogReadsTheFile() =
+        runTest {
+            device.reply("fs cat $BOOT_LOG_PATH", "line1\nline2\n")
+
+            assertEquals("line1\nline2", controller.readBootLog())
+        }
 }
