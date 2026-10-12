@@ -17,6 +17,7 @@ import android.os.Bundle
 import jp.thermoterm.core.ShellSession
 import jp.thermoterm.core.TetherController
 import jp.thermoterm.core.streamLog
+import jp.thermoterm.core.writeLine
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -82,9 +83,18 @@ class MainActivity : Activity() {
             TetherScreen(
                 this,
                 onConnect = ::connect,
-                onTether = ::tether,
-                onRestore = ::restore,
+                onTether = { ssid, psk ->
+                    launchAction { control ->
+                        screen.showResult(control.tether(ssid, psk), R.string.done_tether)
+                    }
+                },
+                onRestore = {
+                    launchAction { control ->
+                        screen.showResult(control.restore(), R.string.done_restore)
+                    }
+                },
                 onToggleLog = ::toggleLog,
+                onSend = ::sendCommand,
             )
         val filter =
             IntentFilter(ACTION_USB_PERMISSION).apply {
@@ -142,26 +152,6 @@ class MainActivity : Activity() {
     }
 
     /**
-     * 入力した SSID とパスワードに切り替える.
-     *
-     * @param ssid テザリングの SSID
-     * @param psk テザリングのパスワード
-     */
-    private fun tether(
-        ssid: String,
-        psk: String,
-    ) {
-        launchAction { control ->
-            screen.showResult(control.tether(ssid, psk), R.string.done_tether)
-        }
-    }
-
-    /** 切り替える前の SSID とパスワードに戻す. */
-    private fun restore() {
-        launchAction { control -> screen.showResult(control.restore(), R.string.done_restore) }
-    }
-
-    /**
      * 通信を別スレッドで行い, 失敗したらメッセージを出す.
      *
      * @param action 機器に対する操作
@@ -208,5 +198,22 @@ class MainActivity : Activity() {
         logJob?.cancelAndJoin()
         logJob = null
         screen.setLogging(false)
+    }
+
+    /**
+     * 入力したコマンドを、そのまま機器に送る (応答は、ログに出る. ログが止まっていれば、始める).
+     *
+     * @param command コマンド
+     */
+    private fun sendCommand(command: String) {
+        val serial = port ?: return
+        if (logJob == null) {
+            toggleLog()
+        }
+        scope.launch {
+            runCatching { serial.writeLine(command) }.onFailure {
+                screen.showMessage(getString(R.string.error, it.message ?: it.javaClass.simpleName))
+            }
+        }
     }
 }

@@ -59,4 +59,15 @@ class ShellSessionTest {
 
             assertFailsWith<ShellException> { ShellSession(device, maxIdleReads = 3).execute("x") }
         }
+
+    /** writeLine は、行の終わりに CR を付けて送る. */
+    @Test
+    fun writeLineAppendsCarriageReturn() =
+        runTest {
+            val device = FakeDevice(silent = true)
+
+            device.writeLine("thermo show")
+
+            assertEquals(listOf("thermo show"), device.written)
+        }
 }

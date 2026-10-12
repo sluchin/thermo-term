@@ -7,6 +7,8 @@
     <string name="log_start">Start log</string>
     <string name="log_stop">Stop log</string>
     <string name="log_clear">Clear log</string>
+    <string name="command_hint">Command (e.g. thermo show)</string>
+    <string name="send">Send</string>
     <string name="tether">Switch to hotspot</string>
     <string name="restore">Restore original</string>
     <string name="not_connected">Not connected</string>

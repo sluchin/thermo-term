@@ -11,6 +11,7 @@ import android.graphics.Typeface
 import android.text.InputType
 import android.util.TypedValue
 import android.view.WindowInsets
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -42,6 +43,7 @@ private const val LOG_MAX_CHARS = 20000
  * @param onTether 「テザリングに切り替える」を押したときの処理 (SSID とパスワードを受け取る)
  * @param onRestore 「元に戻す」を押したときの処理
  * @param onToggleLog 「ログの開始・停止」を押したときの処理
+ * @param onSend 「送信」を押したときの処理 (入力したコマンドを受け取る)
  */
 class TetherScreen(
     private val activity: Activity,
@@ -49,6 +51,7 @@ class TetherScreen(
     onTether: (String, String) -> Unit,
     onRestore: () -> Unit,
     onToggleLog: () -> Unit,
+    onSend: (String) -> Unit,
 ) {
     private val root = ScrollView(activity).apply { clipToPadding = false }
     private val statusView = TextView(activity)
@@ -66,6 +69,18 @@ class TetherScreen(
     private val tetherButton =
         button(R.string.tether) { onTether(ssidInput.text.toString(), pskInput.text.toString()) }
     private val restoreButton = button(R.string.restore, onRestore)
+    private val commandInput =
+        EditText(activity).apply {
+            hint = activity.getString(R.string.command_hint)
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            imeOptions = EditorInfo.IME_ACTION_SEND
+            isSingleLine = true
+            setOnEditorActionListener { _, _, _ ->
+                send(onSend)
+                true
+            }
+        }
+    private val sendButton = button(R.string.send) { send(onSend) }
     private val logButton = button(R.string.log_start, onToggleLog)
     private val logView =
         TextView(activity).apply {
@@ -84,6 +99,8 @@ class TetherScreen(
         content.addView(tetherButton)
         content.addView(restoreButton)
         content.addView(messageView)
+        content.addView(commandInput)
+        content.addView(sendButton)
         content.addView(logButton)
         content.addView(button(R.string.log_clear) { logView.text = "" })
         content.addView(logView)
@@ -99,6 +116,7 @@ class TetherScreen(
             statusView.text = activity.getString(R.string.not_connected)
             setActionsEnabled(false)
             logButton.isEnabled = false
+            sendButton.isEnabled = false
         }
     }
 
@@ -115,6 +133,7 @@ class TetherScreen(
             statusView.text = text
             setActionsEnabled(true)
             logButton.isEnabled = true
+            sendButton.isEnabled = true
             if (!status.tetherSupported) {
                 messageView.text = activity.getString(R.string.old_firmware)
             }
@@ -151,6 +170,19 @@ class TetherScreen(
                 )
             is ActionResult.Failed ->
                 showMessage(activity.getString(R.string.failed, result.command, result.code ?: "?"))
+        }
+    }
+
+    /**
+     * 入力したコマンドを渡して、入力欄を空にする (空のときは、何もしない).
+     *
+     * @param onSend コマンドを受け取る処理
+     */
+    private fun send(onSend: (String) -> Unit) {
+        val command = commandInput.text.toString()
+        if (command.isNotEmpty()) {
+            commandInput.setText("")
+            onSend(command)
         }
     }
 
@@ -208,20 +240,6 @@ class TetherScreen(
         }
 
     /**
-     * 入力の誤りの, メッセージを選ぶ.
-     *
-     * @param error 入力の誤り
-     * @return 文字列のリソース
-     */
-    private fun inputErrorMessage(error: WifiInputError): Int =
-        when (error) {
-            WifiInputError.SSID_EMPTY -> R.string.input_ssid_empty
-            WifiInputError.SSID_TOO_LONG -> R.string.input_ssid_too_long
-            WifiInputError.PSK_TOO_LONG -> R.string.input_psk_too_long
-            WifiInputError.CONTROL_CHARACTER -> R.string.input_control
-        }
-
-    /**
      * 内容が, システムバーとアクションバーの下に, 隠れないようにする.
      *
      * targetSdk 35 以上は, 画面が, システムバーの下まで広がる (edge-to-edge).
@@ -246,3 +264,17 @@ class TetherScreen(
         }
     }
 }
+
+/**
+ * 入力の誤りの, メッセージを選ぶ.
+ *
+ * @param error 入力の誤り
+ * @return 文字列のリソース
+ */
+private fun inputErrorMessage(error: WifiInputError): Int =
+    when (error) {
+        WifiInputError.SSID_EMPTY -> R.string.input_ssid_empty
+        WifiInputError.SSID_TOO_LONG -> R.string.input_ssid_too_long
+        WifiInputError.PSK_TOO_LONG -> R.string.input_psk_too_long
+        WifiInputError.CONTROL_CHARACTER -> R.string.input_control
+    }
