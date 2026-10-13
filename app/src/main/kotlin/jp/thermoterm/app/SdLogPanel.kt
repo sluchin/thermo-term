@@ -19,7 +19,7 @@ private const val SDLOG_TEXT_SIZE_SP = 11f
 /**
  * SD カードに保存された起動のログの表示 (「SD log」のタブ).
  *
- * 「Load」を押すと、機器から起動のログ (boot.log) を読んで、表示する.
+ * 「Load」を押すと, 機器から起動のログ (boot.log) を読んで, 表示する.
  *
  * @property activity 画面を表示する Activity
  * @param onLoad 「読み込む」を押したときの処理
@@ -48,7 +48,7 @@ class SdLogPanel(
         }
 
     /**
-     * 読み込んだログを表示する (空なら、その旨を表示する).
+     * 読み込んだログを表示する (空なら, その旨を表示する).
      *
      * @param text ログの文字列
      */
@@ -59,7 +59,7 @@ class SdLogPanel(
     }
 
     /**
-     * 「読み込む」ボタンを、押せるか押せないかにする.
+     * 「読み込む」ボタンを押せるか押せないかにする.
      *
      * @param enabled 押せるなら true
      */

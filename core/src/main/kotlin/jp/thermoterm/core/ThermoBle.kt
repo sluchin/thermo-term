@@ -14,22 +14,22 @@ const val THERMO_SERVICE_UUID = "9f3c1a00-7b6e-4c3a-9d5e-2a6f0b1c8d01"
 /** 温度の特性の UUID (読み取りと通知). */
 const val THERMO_TEMPERATURE_UUID = "9f3c1a01-7b6e-4c3a-9d5e-2a6f0b1c8d01"
 
-/** 温度の特性の値の大きさ (バイト). 温度 2 バイトと、湿度 2 バイト. */
+/** 温度の特性の値の大きさ (バイト). 温度 2 バイトと, 湿度 2 バイト. */
 const val THERMO_TEMPERATURE_SIZE = 4
 
 /** 湿度を測れないときの値 (ファームウェアの THERMO_HUMIDITY_NONE). */
 private const val HUMIDITY_NONE = 0xFFFF
 
-/** 1 バイトを、符号なしの 0 から 255 にするマスク. */
+/** 1 バイトを符号なしの 0 から 255 にするマスク. */
 private const val BYTE_MASK = 0xFF
 
 /** 1 バイトのビット数. */
 private const val BYTE_BITS = 8
 
-/** 10 倍した値から、元の値に戻す割り算の値. */
+/** 10 倍した値から, 元の値に戻す割り算の値. */
 private const val SCALE = 10.0
 
-/** 温度の符号つき 16 ビットの、符号のビット. */
+/** 温度の符号つき 16 ビットの, 符号のビット. */
 private const val SIGN_BIT = 0x8000
 
 /** 16 ビットの値の個数 (負の値に直すときに引く). */

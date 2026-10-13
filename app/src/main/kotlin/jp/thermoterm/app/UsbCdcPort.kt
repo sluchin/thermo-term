@@ -77,7 +77,7 @@ class UsbCdcPort private constructor(
 
     companion object {
         /**
-         * つながっている USB の機器から、ESP32C3 (Espressif の CDC ACM) を探す.
+         * つながっている USB の機器から, ESP32C3 (Espressif の CDC ACM) を探す.
          *
          * @param manager USB のマネージャ
          * @return 機器. なければ null
@@ -94,7 +94,7 @@ class UsbCdcPort private constructor(
          * 機器が CDC ACM のデータのインターフェースを持っていれば, 開く.
          *
          * @param manager USB のマネージャ
-         * @param device 開く機器 (使う許可を、得てあること)
+         * @param device 開く機器 (使う許可を得てあること)
          * @return 開いたポート. 機器にデータのインターフェースがない, または, 開けなければ null
          */
         fun open(

@@ -17,7 +17,7 @@ class TetherControllerTest {
     private val device = FakeDevice()
     private val controller = TetherController(ShellSession(device, maxIdleReads = 3))
 
-    /** `thermo show` の応答を、登録する. */
+    /** `thermo show` の応答を登録する. */
     private fun showReply(
         ssid: String,
         backup: String,
@@ -32,7 +32,7 @@ class TetherControllerTest {
             assertEquals(DeviceStatus("home", true, null, true), controller.readStatus())
         }
 
-    /** Thermo の機器でなければ、ShellException. */
+    /** Thermo の機器でなければ, ShellException. */
     @Test
     fun readStatusFailsForOtherDevice() =
         runTest {
@@ -41,7 +41,7 @@ class TetherControllerTest {
             assertFailsWith<ShellException> { controller.readStatus() }
         }
 
-    /** 切り替える: tether, apply, show の順に送り、成功を返す. */
+    /** 切り替える: tether, apply, show の順に送り, 成功を返す. */
     @Test
     fun tetherSendsCommandsInOrder() =
         runTest {
@@ -61,7 +61,7 @@ class TetherControllerTest {
             assertEquals(ActionResult.Success(DeviceStatus("my phone", true, "home", true)), result)
         }
 
-    /** 入力に誤りがあれば、何も送らない. */
+    /** 入力に誤りがあれば, 何も送らない. */
     @Test
     fun tetherRejectsInvalidInput() =
         runTest {
@@ -71,7 +71,7 @@ class TetherControllerTest {
             assertEquals(emptyList(), device.written)
         }
 
-    /** 機器が失敗を返したら、エラーコードつきの Failed. apply は送らない. */
+    /** 機器が失敗を返したら, エラーコードつきの Failed. apply は送らない. */
     @Test
     fun tetherReportsDeviceFailure() =
         runTest {
@@ -86,7 +86,7 @@ class TetherControllerTest {
             assertEquals(1, device.written.size)
         }
 
-    /** apply が失敗したら、Failed("apply"). エラーコードが応答になければ null. */
+    /** apply が失敗したら, Failed("apply"). エラーコードが応答になければ null. */
     @Test
     fun tetherReportsApplyFailure() =
         runTest {
@@ -110,7 +110,7 @@ class TetherControllerTest {
             assertIs<ActionResult.Success>(result)
         }
 
-    /** 戻す設定がなければ、Failed("restore", -2). */
+    /** 戻す設定がなければ, Failed("restore", -2). */
     @Test
     fun restoreReportsMissingBackup() =
         runTest {
@@ -122,7 +122,7 @@ class TetherControllerTest {
             assertEquals(ActionResult.Failed("restore", -2), controller.restore())
         }
 
-    /** エラーコードが大きすぎる応答は、コードなし. */
+    /** エラーコードが大きすぎる応答はコードなし. */
     @Test
     fun restoreIgnoresHugeErrorCode() =
         runTest {

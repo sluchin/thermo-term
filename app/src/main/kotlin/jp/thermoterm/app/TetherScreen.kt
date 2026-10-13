@@ -57,13 +57,13 @@ class ScreenActions(
 )
 
 /**
- * 接続の状態と、4 つのタブ (「WiFi」と「Serial」と「SD log」と「BLE」) を並べた画面.
+ * 接続の状態と, 4 つのタブ (「WiFi」と「Serial」と「SD log」と「BLE」) を並べた画面.
  *
- * 「WiFi」のタブは、SSID とパスワードの入力と、切り替えと戻すボタン. 入力欄には、ビルドのときに
+ * 「WiFi」のタブは SSID とパスワードの入力と, 切り替えと戻すボタン. 入力欄にはビルドのときに
  * local.properties で渡した値 (thermoterm.ssid と thermoterm.psk) が入る.
- * 「Serial」のタブは、ログとコマンドの入力 ([LogPanel]).
- * 「SD log」のタブは、SD カードに保存された起動のログ ([SdLogPanel]).
- * 「BLE」のタブは、Bluetooth でつないで、温度と湿度を表示する ([BlePanel]).
+ * 「Serial」のタブはログとコマンドの入力 ([LogPanel]).
+ * 「SD log」のタブは SD カードに保存された起動のログ ([SdLogPanel]).
+ * 「BLE」のタブは Bluetooth でつないで, 温度と湿度を表示する ([BlePanel]).
  *
  * 表示の更新は, どのスレッドから呼んでもよい (画面のスレッドで実行する).
  *
@@ -142,7 +142,7 @@ class TetherScreen(
         activity.setContentView(root)
     }
 
-    /** 未接続の表示にして, 切り替えと戻すボタンと、ログとコマンドの送信を押せなくする. */
+    /** 未接続の表示にして, 切り替えと戻すボタンと, ログとコマンドの送信を押せなくする. */
     fun showDisconnected() {
         activity.runOnUiThread {
             statusView.text = activity.getString(R.string.not_connected)
@@ -152,7 +152,7 @@ class TetherScreen(
         sdLogPanel.setEnabled(false)
     }
 
-    /** 接続したので、ログとコマンドの送信を使えるようにする (機器の状態が読めなくても使える). */
+    /** 接続したので, ログとコマンドの送信を使えるようにする (機器の状態が読めなくても使える). */
     fun showConnected() {
         activity.runOnUiThread { statusView.text = activity.getString(R.string.connected) }
         logPanel.setEnabled(true)
@@ -211,7 +211,7 @@ class TetherScreen(
     }
 
     /**
-     * タブを切り替える (選んでいるタブのボタンは、押せなくする).
+     * タブを切り替える (選んでいるタブのボタンは押せなくする).
      *
      * @param tab 表示するタブ
      */

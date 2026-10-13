@@ -16,7 +16,7 @@ class SdLogTest {
     private val device = FakeDevice()
     private val shell = ShellSession(device, maxIdleReads = 3)
 
-    /** `fs cat` で起動のログを読み、反響を取り除く. */
+    /** `fs cat` で起動のログを読み, 反響を取り除く. */
     @Test
     fun readBootLogReturnsFileContent() =
         runTest {
@@ -36,7 +36,7 @@ class SdLogTest {
             )
         }
 
-    /** ファイルがないときは、機器のエラーの文がそのまま返る. */
+    /** ファイルがないときは機器のエラーの文がそのまま返る. */
     @Test
     fun readBootLogReturnsDeviceError() =
         runTest {
@@ -54,7 +54,7 @@ class SdLogTest {
             assertFailsWith<ShellException> { readBootLog(silent) }
         }
 
-    /** 反響がない応答は、そのまま. */
+    /** 反響がない応答はそのまま. */
     @Test
     fun removeEchoKeepsResponseWithoutEcho() {
         assertEquals("abc\n", removeEcho("abc\n", "fs cat x"))

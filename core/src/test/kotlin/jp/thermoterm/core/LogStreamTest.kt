@@ -16,7 +16,7 @@ import kotlin.test.assertEquals
 /** [streamLog] と [completeUtf8Length] の単体テスト. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class LogStreamTest {
-    /** ログを読んで、色と CR を取り除いて渡す. 取り消すと止まる. */
+    /** ログを読んで, 色と CR を取り除いて渡す. 取り消すと止まる. */
     @Test
     fun streamLogDeliversCleanText() =
         runTest {
@@ -34,7 +34,7 @@ class LogStreamTest {
             assertEquals("[00:00:01] <inf> app: hello\nnext\n", received.toString())
         }
 
-    /** 文字の途中で切れた受信は、続きが届いてから渡す (日本語). */
+    /** 文字の途中で切れた受信は続きが届いてから渡す (日本語). */
     @Test
     fun streamLogJoinsSplitCharacters() =
         runTest {
@@ -49,7 +49,7 @@ class LogStreamTest {
             assertEquals("温度😀\n", received.toString())
         }
 
-    /** 色の制御だけの受信は、空の文字列を渡さない. */
+    /** 色の制御だけの受信は空の文字列を渡さない. */
     @Test
     fun streamLogSkipsEmptyText() =
         runTest {
@@ -64,7 +64,7 @@ class LogStreamTest {
             assertEquals(0, calls)
         }
 
-    /** 完全な文字だけの長さを返す. 不正なバイトは、そのまま通す. */
+    /** 完全な文字だけの長さを返す. 不正なバイトはそのまま通す. */
     @Test
     fun completeUtf8LengthCutsIncompleteTail() {
         assertEquals(0, completeUtf8Length(ByteArray(0)))

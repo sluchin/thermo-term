@@ -19,13 +19,13 @@ import jp.thermoterm.core.formatTemperature
 /** 温度と湿度の文字の大きさ (sp). */
 private const val READING_TEXT_SIZE_SP = 32f
 
-/** Bluetooth の権限を求めるときの、要求の番号. */
+/** Bluetooth の権限を求めるときの, 要求の番号. */
 private const val REQUEST_BLUETOOTH = 1
 
 /**
- * Bluetooth でノードにつないで、温度と湿度を表示する部分 (「BLE」のタブ).
+ * Bluetooth でノードにつないで, 温度と湿度を表示する部分 (「BLE」のタブ).
  *
- * 「Connect」を押すと、Thermo のノードを探してつなぎ、ノードが 5 秒ごとに通知する温度と湿度を
+ * 「Connect」を押すと, Thermo のノードを探してつなぎ, ノードが 5 秒ごとに通知する温度と湿度を
  * 表示する. USB のホストにならない機種でも使える.
  *
  * @property activity 画面を表示する Activity
@@ -75,10 +75,10 @@ class BlePanel(
         }
     }
 
-    /** 画面を閉じるときに、探すのも、つなぐのも、やめる. */
+    /** 画面を閉じるときに, 探すのもつなぐのもやめる. */
     fun release() = client.stop()
 
-    /** 押すたびに、始める (権限がなければ、求める) か、止める. */
+    /** 押すたびに, 始める (権限がなければ, 求める) か, 止める. */
     private fun toggle() {
         if (running) {
             client.stop()
@@ -126,7 +126,7 @@ class BlePanel(
     }
 
     private companion object {
-        /** 必要な権限 (探すのと、つなぐの). 位置情報は、要らない. */
+        /** 必要な権限 (探すのと, つなぐの). 位置情報は要らない. */
         val PERMISSIONS =
             arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT)
     }

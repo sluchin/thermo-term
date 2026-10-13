@@ -51,7 +51,7 @@ fun validateWifi(
 /**
  * 機器の WiFi の設定の状態 (`thermo show` の応答).
  *
- * パスワードは, 機器が伏せるので、分からない (設定されているかだけ分かる).
+ * パスワードは機器が伏せるので, 分からない (設定されているかだけ分かる).
  *
  * @property ssid 今の SSID
  * @property hasPsk パスワードが設定されているか

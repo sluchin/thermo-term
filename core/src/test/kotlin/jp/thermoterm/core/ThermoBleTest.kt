@@ -33,20 +33,20 @@ class ThermoBleTest {
         assertEquals(ThermoReading(-5.0, 10.0), parseThermoReading(bytes(0xCE, 0xFF, 0x64, 0x00)))
     }
 
-    /** 湿度が 0xFFFF なら、湿度なし. */
+    /** 湿度が 0xFFFF なら, 湿度なし. */
     @Test
     fun parsesNoHumidity() {
         assertEquals(ThermoReading(23.5, null), parseThermoReading(bytes(0xEB, 0x00, 0xFF, 0xFF)))
     }
 
-    /** 大きさが 4 バイトでなければ、null. */
+    /** 大きさが 4 バイトでなければ, null. */
     @Test
     fun rejectsWrongSize() {
         assertNull(parseThermoReading(bytes(0x01, 0x02, 0x03)))
         assertNull(parseThermoReading(bytes(0x01, 0x02, 0x03, 0x04, 0x05)))
     }
 
-    /** 表示用の文字列. 届いていないときと、湿度なしは --. */
+    /** 表示用の文字列. 届いていないときと, 湿度なしは --. */
     @Test
     fun formatsForDisplay() {
         val reading = ThermoReading(23.54, 45.0)

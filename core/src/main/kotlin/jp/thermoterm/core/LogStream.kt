@@ -8,7 +8,7 @@ package jp.thermoterm.core
 
 import kotlinx.coroutines.delay
 
-/** 何も届かなかったときに、次の受信まで待つ時間 (ミリ秒). コルーチンを、止められるようにする. */
+/** 何も届かなかったときに, 次の受信まで待つ時間 (ミリ秒). コルーチンを止められるようにする. */
 private const val IDLE_DELAY_MILLIS = 10L
 
 /** 受信の 1 回の待ち時間 (ミリ秒). */
@@ -17,10 +17,10 @@ private const val LOG_READ_TIMEOUT_MILLIS = 100
 /** UTF-8 の 1 文字の最大のバイト数. */
 private const val UTF8_MAX_BYTES = 4
 
-/** 1 バイトを、符号なしの 0 から 255 にするマスク. */
+/** 1 バイトを符号なしの 0 から 255 にするマスク. */
 private const val BYTE_MASK = 0xFF
 
-/** 2 バイトと 3 バイトの文字の、バイト数. */
+/** 2 バイトと 3 バイトの文字の, バイト数. */
 private const val TWO_BYTES = 2
 private const val THREE_BYTES = 3
 
@@ -37,10 +37,10 @@ private const val LEAD4_MASK = 0xF8
 private const val LEAD4_BITS = 0xF0
 
 /**
- * シリアルポートから届くログを、止められるまで読み続けて、文字列にして渡す.
+ * シリアルポートから届くログを止められるまで読み続けて, 文字列にして渡す.
  *
- * 文字の途中 (日本語など) で受信が切れても、続きが届いてから渡す. 画面の制御 (色) と CR は、
- * 取り除く. コルーチンを取り消すと、止まる. 同じポートで、[ShellSession] と同時に使わないこと.
+ * 文字の途中 (日本語など) で受信が切れても続きが届いてから渡す. 画面の制御 (色) と CR は
+ * 取り除く. コルーチンを取り消すと, 止まる. 同じポートで, [ShellSession] と同時に使わないこと.
  *
  * @param port 機器につながったシリアルポート
  * @param onText 文字列を受け取る処理
@@ -67,10 +67,10 @@ suspend fun streamLog(
 }
 
 /**
- * バイト列の終わりが、UTF-8 の文字の途中なら、その手前までの長さを返す.
+ * バイト列の終わりが UTF-8 の文字の途中なら, その手前までの長さを返す.
  *
  * @param bytes バイト列
- * @return 完全な文字だけを含む、先頭からの長さ
+ * @return 完全な文字だけを含む, 先頭からの長さ
  */
 internal fun completeUtf8Length(bytes: ByteArray): Int {
     val tail = minOf(UTF8_MAX_BYTES - 1, bytes.size)
@@ -84,10 +84,10 @@ internal fun completeUtf8Length(bytes: ByteArray): Int {
 }
 
 /**
- * UTF-8 の先頭のバイトから、その文字のバイト数を求める.
+ * UTF-8 の先頭のバイトから, その文字のバイト数を求める.
  *
  * @param lead 先頭のバイト (0 から 255)
- * @return バイト数. 1 バイトの文字か、不正な値は 1
+ * @return バイト数. 1 バイトの文字か, 不正な値は 1
  */
 private fun needed(lead: Int): Int =
     when {

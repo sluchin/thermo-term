@@ -29,7 +29,7 @@ import jp.thermoterm.core.ThermoReading
 import jp.thermoterm.core.parseThermoReading
 import java.util.UUID
 
-/** ノードを探す時間 (ミリ秒). これを過ぎたら、見つからなかったとする. */
+/** ノードを探す時間 (ミリ秒). これを過ぎたら, 見つからなかったとする. */
 private const val SCAN_TIMEOUT_MILLIS = 15_000L
 
 /** 通知の設定 (CCC) の UUID. */
@@ -46,28 +46,28 @@ enum class BleState {
     /** ノードを探している. */
     SCANNING,
 
-    /** 探した時間内に、ノードが見つからなかった. */
+    /** 探した時間内に, ノードが見つからなかった. */
     NOT_FOUND,
 
     /** 見つけたノードにつないでいる. */
     CONNECTING,
 
-    /** つながって、通知を受け取っている. */
+    /** つながって, 通知を受け取っている. */
     CONNECTED,
 
-    /** つながったあとで、切れた. */
+    /** つながったあとで, 切れた. */
     DISCONNECTED,
 
-    /** ノードのサービスが見つからないなど、通信に失敗した. */
+    /** ノードのサービスが見つからないなど, 通信に失敗した. */
     FAILED,
 }
 
 /**
- * BLE の中央機器 (Central) として、Thermo のノードを探して、温度と湿度の通知を受け取る.
+ * BLE の中央機器 (Central) として, Thermo のノードを探して, 温度と湿度の通知を受け取る.
  *
- * ノードを探し (Thermo サービスの UUID)、最初に見つかったノードにつなぎ、温度の特性の通知を
- * 購読する. ノードは 5 秒ごとに通知する. 呼び出す前に、Bluetooth の権限
- * (BLUETOOTH_SCAN と BLUETOOTH_CONNECT) を得ておくこと. 結果は、画面のスレッドで通知する.
+ * ノードを探し (Thermo サービスの UUID), 最初に見つかったノードにつなぎ, 温度の特性の通知を
+ * 購読する. ノードは 5 秒ごとに通知する. 呼び出す前に, Bluetooth の権限
+ * (BLUETOOTH_SCAN と BLUETOOTH_CONNECT) を得ておくこと. 結果は画面のスレッドで通知する.
  *
  * @property context コンテキスト
  * @property onState 状態が変わったときの処理
@@ -153,7 +153,7 @@ class BleThermoClient(
             }
         }
 
-    /** ノードを探して、見つかったらつなぐ. すでに動いているときは、何もしない. */
+    /** ノードを探して, 見つかったらつなぐ. すでに動いているときは何もしない. */
     fun start() {
         val adapter = context.getSystemService(BluetoothManager::class.java)?.adapter
         val scanner = adapter?.takeIf { it.isEnabled }?.bluetoothLeScanner
@@ -178,7 +178,7 @@ class BleThermoClient(
         }
     }
 
-    /** 探すのも、つなぐのも、やめる. */
+    /** 探すのもつなぐのもやめる. */
     fun stop() {
         if (scanning) {
             stopScan(BleState.IDLE)
@@ -190,7 +190,7 @@ class BleThermoClient(
     }
 
     /**
-     * 探すのをやめて、状態を通知する.
+     * 探すのをやめて, 状態を通知する.
      *
      * @param state 通知する状態
      */
@@ -212,7 +212,7 @@ class BleThermoClient(
      *
      * @param device ノード
      */
-    @Suppress("DEPRECATION") // 新しい API は、minSdk (33) より新しい版にしかない
+    @Suppress("DEPRECATION") // 新しい API は minSdk (33) より新しい版にしかない
     private fun connect(device: BluetoothDevice) {
         gatt =
             device.connectGatt(
@@ -226,7 +226,7 @@ class BleThermoClient(
     }
 
     /**
-     * 温度の特性の通知を購読する (通知を受け取る設定と、ノードの CCC への書き込み).
+     * 温度の特性の通知を購読する (通知を受け取る設定と, ノードの CCC への書き込み).
      *
      * @param gatt 接続
      * @param characteristic 温度の特性
@@ -244,7 +244,7 @@ class BleThermoClient(
     }
 
     /**
-     * 接続を閉じて、状態を通知する.
+     * 接続を閉じて, 状態を通知する.
      *
      * @param state 通知する状態
      */
@@ -255,7 +255,7 @@ class BleThermoClient(
     }
 
     /**
-     * 画面のスレッドで実行する (GATT のコールバックは、別のスレッドで呼ばれる).
+     * 画面のスレッドで実行する (GATT のコールバックは別のスレッドで呼ばれる).
      *
      * @param action 実行する処理
      */

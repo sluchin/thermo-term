@@ -13,7 +13,7 @@ import kotlin.test.assertFailsWith
 
 /** [ShellSession] の単体テスト. */
 class ShellSessionTest {
-    /** コマンドの応答を、反響とプロンプトを含めて、返す. */
+    /** コマンドの応答を反響とプロンプトを含めて, 返す. */
     @Test
     fun executeReturnsReplyUpToPrompt() =
         runTest {
@@ -26,7 +26,7 @@ class ShellSessionTest {
             assertEquals(listOf("thermo show"), device.written)
         }
 
-    /** 溜まっている出力 (起動のログ) は、捨ててから、送る. */
+    /** 溜まっている出力 (起動のログ) は捨ててから, 送る. */
     @Test
     fun executeDiscardsPendingOutput() =
         runTest {
@@ -39,7 +39,7 @@ class ShellSessionTest {
             assertEquals("x\ny\n", reply)
         }
 
-    /** 文字の途中で切れた受信も、つなげて読む (日本語の SSID). */
+    /** 文字の途中で切れた受信もつなげて読む (日本語の SSID). */
     @Test
     fun executeJoinsChunksSplitInsideACharacter() =
         runTest {
@@ -51,7 +51,7 @@ class ShellSessionTest {
             assertEquals("show\nssid: 自宅\n", reply)
         }
 
-    /** プロンプトが現れなければ、ShellException. */
+    /** プロンプトが現れなければ, ShellException. */
     @Test
     fun executeFailsWithoutPrompt() =
         runTest {
@@ -60,7 +60,7 @@ class ShellSessionTest {
             assertFailsWith<ShellException> { ShellSession(device, maxIdleReads = 3).execute("x") }
         }
 
-    /** writeLine は、行の終わりに CR を付けて送る. */
+    /** writeLine は行の終わりに CR を付けて送る. */
     @Test
     fun writeLineAppendsCarriageReturn() =
         runTest {

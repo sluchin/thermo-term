@@ -14,7 +14,7 @@ import kotlin.test.assertTrue
 
 /** [validateWifi], [parseStatus] の単体テスト. */
 class WifiSettingsTest {
-    /** 正しい入力は、誤りなし. パスワードは空でもよい. */
+    /** 正しい入力は誤りなし. パスワードは空でもよい. */
     @Test
     fun validateWifiAcceptsValidInput() {
         assertNull(validateWifi("phone", "password"))
@@ -35,7 +35,7 @@ class WifiSettingsTest {
         assertEquals(WifiInputError.CONTROL_CHARACTER, validateWifi("ab", "p\rw"))
     }
 
-    /** 長さは、バイト数で数える (日本語は 3 バイト). */
+    /** 長さはバイト数で数える (日本語は 3 バイト). */
     @Test
     fun validateWifiCountsBytes() {
         assertEquals(WifiInputError.SSID_TOO_LONG, validateWifi("a".repeat(SSID_MAX_BYTES + 1), ""))
@@ -44,7 +44,7 @@ class WifiSettingsTest {
         assertEquals(WifiInputError.PSK_TOO_LONG, validateWifi("a", "b".repeat(PSK_MAX_BYTES + 1)))
     }
 
-    /** `thermo show` の応答から、状態を取り出す (切り替え前). */
+    /** `thermo show` の応答から, 状態を取り出す (切り替え前). */
     @Test
     fun parseStatusReadsPlainSettings() {
         val status =
@@ -56,7 +56,7 @@ class WifiSettingsTest {
         assertEquals(DeviceStatus("home-ap", true, null, true), status)
     }
 
-    /** 切り替え済みなら、元の SSID. パスワードが空なら、hasPsk は false. */
+    /** 切り替え済みなら, 元の SSID. パスワードが空なら, hasPsk は false. */
     @Test
     fun parseStatusReadsBackup() {
         val status = parseStatus("ssid: phone\npsk: (empty)\ntether backup: home-ap\n")

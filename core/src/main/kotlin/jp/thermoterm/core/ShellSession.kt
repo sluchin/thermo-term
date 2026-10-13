@@ -20,7 +20,7 @@ const val DEFAULT_MAX_IDLE_READS = 30
 /**
  * 機器のシェル (Zephyr の shell) にコマンドを送って, 応答を受け取る.
  *
- * コマンドの終わりは、プロンプトが現れることで分かる.
+ * コマンドの終わりはプロンプトが現れることで分かる.
  *
  * @property port 機器につながったシリアルポート
  * @property prompt シェルのプロンプト

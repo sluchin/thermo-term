@@ -9,8 +9,8 @@ package jp.thermoterm.core
 /**
  * ESP32C3 とつながったシリアルポート (USB の CDC ACM).
  *
- * Android の実装は app にある (USB ホストの API). core は、この型にだけ依存するので、
- * 単体テストでは、偽の機器に置き換える.
+ * Android の実装は app にある (USB ホストの API). core はこの型にだけ依存するので,
+ * 単体テストでは偽の機器に置き換える.
  */
 interface SerialPort {
     /**
@@ -30,7 +30,7 @@ interface SerialPort {
 }
 
 /**
- * 1 行を送る (終わりに CR を付ける). シェルのコマンドを、そのまま送るときに使う.
+ * 1 行を送る (終わりに CR を付ける). シェルのコマンドをそのまま送るときに使う.
  *
  * 応答は読まない (ログとして読み続けている [streamLog] が受け取る).
  *

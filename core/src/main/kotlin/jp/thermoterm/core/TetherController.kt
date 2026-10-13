@@ -73,7 +73,7 @@ class TetherController(
     /**
      * SD カードに保存された, 起動のログを読む.
      *
-     * @return ログの文字列 (ファイルがないときは、機器のエラーの文)
+     * @return ログの文字列 (ファイルがないときは機器のエラーの文)
      * @throws ShellException 機器が応答しない
      */
     suspend fun readBootLog(): String = jp.thermoterm.core.readBootLog(shell)
@@ -128,7 +128,7 @@ class TetherController(
     }
 
     /**
-     * 応答が成功を表していなければ、失敗の結果を作る.
+     * 応答が成功を表していなければ, 失敗の結果を作る.
      *
      * @param name コマンドの名前
      * @param reply 応答

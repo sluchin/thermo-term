@@ -196,7 +196,7 @@ class MainActivity : Activity() {
         }
     }
 
-    /** ログの読み取りを、始める. 読んでいるときは、止める. */
+    /** ログの読み取りを始める. 読んでいるときは止める. */
     private fun toggleLog() {
         val serial = port ?: return
         if (logJob != null) {
@@ -221,7 +221,7 @@ class MainActivity : Activity() {
             }
     }
 
-    /** ログの読み取りが動いていれば、終わるまで待って止める (コマンドの応答と、混ざらないように). */
+    /** ログの読み取りが動いていれば, 終わるまで待って止める (コマンドの応答と, 混ざらないように). */
     private suspend fun stopLog() {
         logJob?.cancelAndJoin()
         logJob = null
@@ -229,7 +229,7 @@ class MainActivity : Activity() {
     }
 
     /**
-     * 入力したコマンドを、そのまま機器に送る (応答は、ログに出る. ログが止まっていれば、始める).
+     * 入力したコマンドをそのまま機器に送る (応答はログに出る. ログが止まっていれば, 始める).
      *
      * @param command コマンド
      */
@@ -247,7 +247,7 @@ class MainActivity : Activity() {
 }
 
 /**
- * スマートフォンから見えている USB の機器の一覧を、文字列にする (機器が見つからない原因の切り分け用).
+ * スマートフォンから見えている USB の機器の一覧を文字列にする (機器が見つからない原因の切り分け用).
  *
  * @param manager USB のマネージャ
  * @return 機器の一覧の文字列

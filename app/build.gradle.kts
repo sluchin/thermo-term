@@ -6,9 +6,9 @@ plugins {
     alias(libs.plugins.detekt)
 }
 
-// テザリングの SSID とパスワードは、リポジトリに入れない.
-// local.properties (コミットしない. UTF-8) か、Gradle のプロパティ (-Pthermoterm.ssid=...) で渡す.
-// 渡した値は、APK に平文で入る (入力欄の初期値になる). その APK を、配布しない.
+// テザリングの SSID とパスワードはリポジトリに入れない.
+// local.properties (コミットしない. UTF-8) か, Gradle のプロパティ (-Pthermoterm.ssid=...) で渡す.
+// 渡した値は APK に平文で入る (入力欄の初期値になる). その APK を配布しない.
 val localProperties =
     Properties().apply {
         val file = rootProject.file("local.properties")
@@ -39,7 +39,7 @@ android {
     defaultConfig {
         // applicationId は, 仮の値 (リリースの前に決める)
         applicationId = "jp.thermoterm.app"
-        // USB の使用許可の PendingIntent (FLAG_MUTABLE) と、ブロードキャストの RECEIVER_NOT_EXPORTED が、
+        // USB の使用許可の PendingIntent (FLAG_MUTABLE) と, ブロードキャストの RECEIVER_NOT_EXPORTED が
         // 条件分岐なしで使える版
         minSdk = 33
         targetSdk = 37

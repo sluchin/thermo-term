@@ -15,7 +15,7 @@ const val BOOT_LOG_PATH = "/SD:/boot.log"
  * ファイルがない, SD カードがマウントされていないときは, 機器が出すエラーの文が, そのまま返る.
  *
  * @param shell 機器のシェル
- * @return ログの文字列 (入力の反響と、終わりの空白と改行は、取り除き済み)
+ * @return ログの文字列 (入力の反響と, 終わりの空白と改行は取り除き済み)
  * @throws ShellException 機器が応答しない
  */
 suspend fun readBootLog(shell: ShellSession): String {
