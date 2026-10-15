@@ -1,5 +1,5 @@
-# 共通の設定. コンテナは, ホストのユーザーで実行する (生成物が, root 所有にならないように).
-# UID と GID は, シェルでエクスポートしておく (SETUP.md)
+# 共通の設定. コンテナはホストのユーザーで実行する (生成物が root 所有にならないように).
+# UID と GID はシェルでエクスポートしておく (SETUP.md)
 x-common: &common
   build:
     context: .
@@ -8,15 +8,15 @@ x-common: &common
   image: thermo-term-dev:latest
   volumes:
     - .:/workspace
-    # Gradle のキャッシュ. 既定は, ボリューム gradle-cache. CI は, GRADLE_HOME_DIR に, キャッシュするディレクトリ
+    # Gradle のキャッシュ. 既定はボリューム gradle-cache. CI は GRADLE_HOME_DIR にキャッシュするディレクトリ
     # (絶対パス) を指定して, ボリュームの代わりに, そのディレクトリを使う (.github/actions/gradle-cache)
     - ${GRADLE_HOME_DIR:-gradle-cache}:/gradle-home
   working_dir: /workspace
   user: "${UID:-0}:${GID:-0}"
   environment:
     - HOME=/tmp
-    # デバッグ用の署名の鍵 (debug.keystore) を, ボリュームに残す. 残さないと, コンテナを起動するたびに,
-    # 鍵が作り直されて, 署名が変わり, 実機やエミュレータに, 上書きでインストールできない
+    # デバッグ用の署名の鍵 (debug.keystore) をボリュームに残す. 残さないと, コンテナを起動するたびに,
+    # 鍵が作り直されて, 署名が変わり, 実機やエミュレータに上書きでインストールできない
     - ANDROID_USER_HOME=/gradle-home/android
 
 services:
@@ -62,7 +62,7 @@ services:
     <<: *common
     command: ./gradlew --no-daemon :core:dokkaGenerate
 
-  # 生成物 (build/ と .gradle/ と .kotlin/) を消す. Gradle のキャッシュ (ボリューム) は, 消さない
+  # 生成物 (build/ と .gradle/ と .kotlin/) を消す. Gradle のキャッシュ (ボリューム) は消さない
   clean:
     <<: *common
     command: sh -c "rm -rf build core/build app/build .gradle .kotlin && echo 'Removed the build outputs'"

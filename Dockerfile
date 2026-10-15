@@ -3,7 +3,7 @@ FROM ubuntu:24.04 AS dev
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# ログの日本語 (Kotlin のメッセージ, KDoc の警告など) を, 文字化けさせない
+# ログの日本語 (Kotlin のメッセージ, KDoc の警告など) を文字化けさせない
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
@@ -35,17 +35,17 @@ RUN mkdir -p ${ANDROID_HOME}/cmdline-tools && \
 ENV PATH=${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${PATH}
 
 # SDK のコンポーネント. コンテナは一般ユーザーで動き, SDK は読み取り専用になる.
-# 足りないコンポーネントは, Gradle が, 実行時に, インストールできない. 必要になったら, ここに足す.
-# build-tools は, app/build.gradle.kts で固定する.
+# 足りないコンポーネントは, Gradle が実行時にインストールできない. 必要になったら, ここに足す.
+# build-tools は app/build.gradle.kts で固定する.
 RUN yes | sdkmanager --licenses > /dev/null && \
     sdkmanager "platform-tools" "platforms;android-37.0" "build-tools;37.0.0" && \
     chmod -R a+rX ${ANDROID_HOME}
 
-# Gradle のキャッシュ. 名前付きボリュームを mount する (空のボリュームは, この権限を引き継ぐ)
+# Gradle のキャッシュ. 名前付きボリュームを mount する (空のボリュームはこの権限を引き継ぐ)
 ENV GRADLE_USER_HOME=/gradle-home
 RUN mkdir -p /gradle-home && chmod 777 /gradle-home
 
-# コンテナはホストユーザーで実行されるが, イメージ内の /workspace は, そのユーザーの所有ではないため
+# コンテナはホストユーザーで実行されるが, イメージ内の /workspace はそのユーザーの所有ではないため
 RUN git config --system --add safe.directory '*'
 
 WORKDIR /workspace
