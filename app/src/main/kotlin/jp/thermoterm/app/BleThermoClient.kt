@@ -29,6 +29,9 @@ import jp.thermoterm.core.ThermoReading
 import jp.thermoterm.core.parseThermoReading
 import java.util.UUID
 
+/** ログのタグ. */
+private const val TAG = "Ble"
+
 /** ノードを探す時間 (ミリ秒). これを過ぎたら, 見つからなかったとする. */
 private const val SCAN_TIMEOUT_MILLIS = 15_000L
 
@@ -94,7 +97,10 @@ class BleThermoClient(
                 connect(result.device)
             }
 
-            override fun onScanFailed(errorCode: Int) = stopScan(BleState.FAILED)
+            override fun onScanFailed(errorCode: Int) {
+                AppLog.w(TAG, "The BLE scan failed: $errorCode")
+                stopScan(BleState.FAILED)
+            }
         }
 
     private val gattCallback =
@@ -195,6 +201,7 @@ class BleThermoClient(
      * @param state 通知する状態
      */
     private fun stopScan(state: BleState) {
+        AppLog.d(TAG) { "Stopped the scan: $state" }
         handler.removeCallbacks(timeout)
         if (scanning) {
             scanning = false
@@ -249,6 +256,7 @@ class BleThermoClient(
      * @param state 通知する状態
      */
     private fun close(state: BleState) {
+        AppLog.d(TAG) { "Closed the connection: $state" }
         gatt?.close()
         gatt = null
         post { onState(state) }

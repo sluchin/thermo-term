@@ -87,3 +87,19 @@ scripts/cloud-docker.sh start        # Docker のデーモンを起動する
 
 - 確認した: `format-fix` `format` `analyze` `build` `test` `coverage` (`core` の行と分岐が 100%) `docs`。全て成功。
 - **未確認**: 実機での USB の通信 (使用許可、CDC ACM のバルク転送。制御線を動かさなくても、シェルが応答するか)、Zephyr のシェルの引用符 (`\"` と `\\`) の扱い、日本語の SSID、テザリングへの接続、CI。
+
+
+## ログを見る
+
+アプリのログは、Android の logcat に出ます (`app/src/main/kotlin/jp/thermoterm/app/AppLog.kt`)。タグは機能ごとです (`Usb`、`Ble`)。
+
+```bash
+# エミュレータ (Docker) のログを、タグで絞って見る (D はデバッグ以上)
+docker compose exec emulator adb logcat -s Usb:D Ble:D AndroidRuntime:E
+# 実機 (USB でつなぐ) なら
+adb logcat -s Usb:D Ble:D AndroidRuntime:E
+```
+
+- デバッグのログ (`AppLog.d`) は、デバッグ版 (`assembleDebug`) だけで出ます。リリース版では、情報 (`AppLog.i`)、警告 (`AppLog.w`)、エラー (`AppLog.e`) だけが出ます。
+- アプリが落ちたときの例外は、`AndroidRuntime` のタグで出ます。
+- Google Play で公開したら、落ちたときの例外と ANR (応答なし) は、Play Console の「Android Vitals」に集まります (アプリのコードは要りません。利用者が、使用状況と診断情報の送信を許可している端末から、集まります)。リリース版で R8 の難読化を有効にしたら、Play Console に、対応表 (`mapping.txt`) を上げると、例外の場所が読めます。

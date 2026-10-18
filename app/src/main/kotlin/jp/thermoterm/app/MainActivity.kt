@@ -29,6 +29,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 
+/** ログのタグ. */
+private const val TAG = "Usb"
+
 /** USB の使用許可の結果を受け取る, ブロードキャストの名前. */
 private const val ACTION_USB_PERMISSION = "jp.thermoterm.app.USB_PERMISSION"
 
@@ -143,6 +146,7 @@ class MainActivity : Activity() {
         val manager = getSystemService(UsbManager::class.java)
         val device = UsbCdcPort.findDevice(manager)
         if (device == null) {
+            AppLog.w(TAG, "No USB device found")
             screen.showMessage(getString(R.string.no_device) + "\n" + describeUsb(manager))
         } else if (manager.hasPermission(device)) {
             openPort()
@@ -158,9 +162,11 @@ class MainActivity : Activity() {
         val manager = getSystemService(UsbManager::class.java)
         val opened = UsbCdcPort.findDevice(manager)?.let { UsbCdcPort.open(manager, it) }
         if (opened == null) {
+            AppLog.w(TAG, "Could not open the USB port")
             screen.showMessage(getString(R.string.open_failed))
             return
         }
+        AppLog.i(TAG, "Opened the USB port")
         disconnect()
         port = opened
         controller = TetherController(ShellSession(opened))
@@ -170,6 +176,7 @@ class MainActivity : Activity() {
 
     /** ポートを閉じて, 未接続の表示に戻す. */
     private fun disconnect() {
+        AppLog.d(TAG) { "Disconnecting (port open: ${port != null})" }
         logJob?.cancel()
         logJob = null
         screen.logPanel.setLogging(false)
@@ -191,6 +198,8 @@ class MainActivity : Activity() {
             stopLog()
             // 画面に出すのは, メッセージだけ (パスワードを含む応答は, 出さない)
             runCatching { action(control) }.onFailure {
+                // 命令と応答は, 書かない (パスワードを含むことがある)
+                AppLog.w(TAG, "The action on the device failed", it)
                 screen.showMessage(getString(R.string.error, it.message ?: it.javaClass.simpleName))
             }
         }
@@ -210,6 +219,7 @@ class MainActivity : Activity() {
             scope.launch {
                 runCatching { streamLog(serial, screen.logPanel::append) }.onFailure {
                     if (it !is CancellationException) {
+                        AppLog.w(TAG, "Reading the device log failed", it)
                         screen.showMessage(
                             getString(
                                 R.string.error,
@@ -240,6 +250,7 @@ class MainActivity : Activity() {
         }
         scope.launch {
             runCatching { serial.writeLine(command) }.onFailure {
+                AppLog.w(TAG, "Could not send the command", it)
                 screen.showMessage(getString(R.string.error, it.message ?: it.javaClass.simpleName))
             }
         }
