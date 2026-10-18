@@ -40,7 +40,7 @@ docker compose run --rm dev         # 開発シェル
 
 | サービス | 内容 |
 |:---|:---|
-| `build` | デバッグ APK (`app/build/outputs/apk/debug/app-debug.apk`) |
+| `build` | デバッグ APK (`app/build/outputs/apk/debug/thermo-term-<版>-debug.apk`) |
 | `test` | 単体テスト |
 | `coverage` | `core` の行と分岐が 100% でなければ失敗 |
 | `format` / `format-fix` | 整形の確認 (ktlint) / 書き換え |

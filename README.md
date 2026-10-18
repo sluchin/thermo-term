@@ -69,7 +69,7 @@ Docker と Docker Compose V2 が要ります (JDK、Gradle、Android SDK はイ�
 
 ```bash
 docker compose build              # イメージ (thermo-term-dev) を作る (最初の 1 回)
-docker compose run --rm build     # デバッグ APK: app/build/outputs/apk/debug/app-debug.apk
+docker compose run --rm build     # デバッグ APK: app/build/outputs/apk/debug/thermo-term-<版>-debug.apk
 docker compose run --rm test      # 単体テスト
 docker compose run --rm coverage  # core の行と分岐が 100% でなければ失敗
 docker compose run --rm format    # 整形の確認 (format-fix で、書き換える)
@@ -80,7 +80,7 @@ docker compose run --rm clean     # 生成物を消す
 
 クラウドのセッション (claude.ai/code) では、`docker compose run --rm <サービス>` の代わりに、`scripts/cloud-docker.sh run <サービス>` を使います ([SETUP.md](SETUP.md))。
 
-実機に入れるにはホストの adb で `adb install -r app/build/outputs/apk/debug/app-debug.apk` です。
+実機に入れるにはホストの adb で `adb install -r app/build/outputs/apk/debug/thermo-term-*-debug.apk` です。
 
 ## CI
 

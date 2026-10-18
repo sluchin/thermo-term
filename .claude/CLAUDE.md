@@ -19,7 +19,7 @@ Kotlin で作る Android アプリ。スマートフォンと ESP32C3 (姉妹プ
 - `docker compose run` には必ず `--rm` を付ける (終わったコンテナを残さないため)。
 - `UID` と `GID` をシェルでエクスポートしておく (生成物が root 所有にならないように。`SETUP.md` の「2. ホストのユーザー ID を環境変数にエクスポートする」)。
 - イメージのビルド: `docker compose build` (`Dockerfile` を変えたときも)
-- ビルド (デバッグ APK): `docker compose run --rm build` (`app/build/outputs/apk/debug/app-debug.apk`)
+- ビルド (デバッグ APK): `docker compose run --rm build` (`app/build/outputs/apk/debug/thermo-term-<版>-debug.apk`)
 - 単体テスト: `docker compose run --rm test`
 - カバレッジ (`core` の行と分岐が 100%): `docker compose run --rm coverage`
 - 整形の確認: `docker compose run --rm format` / 整形して書き換える: `docker compose run --rm format-fix`
@@ -29,7 +29,7 @@ Kotlin で作る Android アプリ。スマートフォンと ESP32C3 (姉妹プ
 - 開発シェル: `docker compose run --rm dev`
 
 ### 実機への転送 (ホストの adb)
-- `adb install -r app/build/outputs/apk/debug/app-debug.apk` (ホストに adb を入れる。`SETUP.md` の「実機へのインストール」)
+- `adb install -r app/build/outputs/apk/debug/thermo-term-*-debug.apk` (ホストに adb を入れる。`SETUP.md` の「実機へのインストール」)
 
 ### クラウドのセッション (claude.ai/code) で Docker を使うとき
 

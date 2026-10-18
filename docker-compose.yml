@@ -27,7 +27,7 @@ services:
     tty: true
     command: /bin/bash
 
-  # デバッグ用の APK をビルドする (app/build/outputs/apk/debug/app-debug.apk). Kotlin の警告が出たら失敗する
+  # デバッグ用の APK をビルドする (app/build/outputs/apk/debug/thermo-term-<版>-debug.apk). Kotlin の警告が出たら失敗する
   build:
     <<: *common
     command: ./gradlew --no-daemon :app:assembleDebug
