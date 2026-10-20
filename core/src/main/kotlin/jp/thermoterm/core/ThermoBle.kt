@@ -14,8 +14,11 @@ const val THERMO_SERVICE_UUID = "9f3c1a00-7b6e-4c3a-9d5e-2a6f0b1c8d01"
 /** 温度の特性の UUID (読み取りと通知). */
 const val THERMO_TEMPERATURE_UUID = "9f3c1a01-7b6e-4c3a-9d5e-2a6f0b1c8d01"
 
-/** 温度の特性の値の大きさ (バイト). 温度 2 バイトと, 湿度 2 バイト. */
-const val THERMO_TEMPERATURE_SIZE = 4
+/** 温度の特性の値の大きさ (バイト). 温度 2 バイトと, 湿度 2 バイトと, 気圧 2 バイト. */
+const val THERMO_TEMPERATURE_SIZE = 6
+
+/** 気圧を足す前のファームウェアの, 温度の特性の値の大きさ (バイト). 温度 2 バイトと, 湿度 2 バイト. */
+const val THERMO_TEMPERATURE_SIZE_NO_PRESSURE = 4
 
 /** 湿度を測れないときの値 (ファームウェアの THERMO_HUMIDITY_NONE). */
 private const val HUMIDITY_NONE = 0xFFFF
@@ -50,16 +53,19 @@ data class ThermoReading(
 )
 
 /**
- * 温度の特性の値 (4 バイト) を解析する.
+ * 温度の特性の値 (6 バイト. 気圧を足す前のファームウェアは 4 バイト) を解析する.
  *
  * 先頭の 2 バイトが温度 (符号つき 16 ビット, ℃ の 10 倍), 続く 2 バイトが湿度 (符号なし 16 ビット,
- * % の 10 倍. 0xFFFF は湿度なし). どちらもリトルエンディアン.
+ * % の 10 倍. 0xFFFF は湿度なし). どちらもリトルエンディアン. 6 バイトのときの, 続く 2 バイトは
+ * 気圧 (hPa の 10 倍) で, 使わない (温度と湿度だけを表示する).
  *
  * @param bytes 特性の値
- * @return 温度と湿度. 大きさが 4 バイトでなければ null
+ * @return 温度と湿度. 大きさが 6 バイトでも 4 バイトでもなければ null
  */
 fun parseThermoReading(bytes: ByteArray): ThermoReading? {
-    if (bytes.size != THERMO_TEMPERATURE_SIZE) {
+    if (bytes.size != THERMO_TEMPERATURE_SIZE &&
+        bytes.size != THERMO_TEMPERATURE_SIZE_NO_PRESSURE
+    ) {
         return null
     }
     val temp = littleEndian16(bytes, 0).let { if (it and SIGN_BIT != 0) it - SHORT_RANGE else it }
