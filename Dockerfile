@@ -1,5 +1,5 @@
 # 開発用のイメージ (dev)
-FROM ubuntu:24.04 AS dev
+FROM ubuntu:26.04 AS dev
 
 ENV DEBIAN_FRONTEND=noninteractive
 
