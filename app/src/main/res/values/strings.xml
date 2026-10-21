@@ -50,4 +50,18 @@
     <string name="input_control">The SSID and the password cannot contain control characters.</string>
     <string name="failed">The device refused \"%1$s\" (error %2$s).</string>
     <string name="error">Error: %1$s</string>
+    <string name="menu_app_log">App log</string>
+    <string name="applog_title">thermo-term app log</string>
+    <string name="applog_level_info">Info+</string>
+    <string name="applog_level_warn">Warnings+</string>
+    <string name="applog_level_error">Errors</string>
+    <string name="applog_level_all">All</string>
+    <string name="applog_save">Save</string>
+    <string name="applog_share">Share</string>
+    <string name="applog_clear">Clear</string>
+    <string name="applog_clear_confirm">Delete all the app logs?</string>
+    <string name="applog_empty">No logs.</string>
+    <string name="applog_saved">Saved the log.</string>
+    <string name="applog_read_error">Could not read the log: %1$s</string>
+    <string name="applog_save_error">Could not save the log: %1$s</string>
 </resources>

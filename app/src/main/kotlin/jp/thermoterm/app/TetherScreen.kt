@@ -8,9 +8,7 @@ package jp.thermoterm.app
 
 import android.app.Activity
 import android.text.InputType
-import android.util.TypedValue
 import android.view.View
-import android.view.WindowInsets
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -18,9 +16,6 @@ import android.widget.TextView
 import jp.thermoterm.core.ActionResult
 import jp.thermoterm.core.DeviceStatus
 import jp.thermoterm.core.WifiInputError
-
-/** 画面の端と, 内容の間の余白 (dp). */
-private const val CONTENT_PADDING_DP = 16
 
 /** 画面のタブ. */
 private enum class Tab {
@@ -136,7 +131,7 @@ class TetherScreen(
         root.addView(logPanel.view, fill)
         root.addView(sdLogPanel.view, fill)
         root.addView(blePanel.view, fill)
-        applySystemBarInsets()
+        activity.padForSystemBars(root)
         selectTab(Tab.WIFI)
         showDisconnected()
         activity.setContentView(root)
@@ -234,31 +229,6 @@ class TetherScreen(
     private fun setActionsEnabled(enabled: Boolean) {
         tetherButton.isEnabled = enabled
         restoreButton.isEnabled = enabled
-    }
-
-    /**
-     * 内容が, システムバーとアクションバーの下に, 隠れないようにする.
-     *
-     * targetSdk 35 以上は, 画面が, システムバーの下まで広がる (edge-to-edge).
-     * システムバーの余白と, アクションバーの高さを, パディングに入れる.
-     */
-    private fun applySystemBarInsets() {
-        val padding = activity.dp(CONTENT_PADDING_DP)
-        val actionBarSize =
-            TypedValue().let {
-                activity.theme.resolveAttribute(android.R.attr.actionBarSize, it, true)
-                TypedValue.complexToDimensionPixelSize(it.data, activity.resources.displayMetrics)
-            }
-        root.setOnApplyWindowInsetsListener { target, insets ->
-            val bars = insets.getInsets(WindowInsets.Type.systemBars())
-            target.setPadding(
-                bars.left + padding,
-                bars.top + actionBarSize + padding,
-                bars.right + padding,
-                bars.bottom + padding,
-            )
-            insets
-        }
     }
 }
 

@@ -14,6 +14,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.UsbManager
 import android.os.Bundle
+import android.view.Menu
 import jp.thermoterm.core.ShellSession
 import jp.thermoterm.core.TetherController
 import jp.thermoterm.core.UsbDeviceInfo
@@ -41,7 +42,9 @@ private const val ACTION_USB_PERMISSION = "jp.thermoterm.app.USB_PERMISSION"
  * スマートフォンと ESP32C3 を, USB ケーブル (Type-C) でつなぐ. 元の SSID とパスワードは,
  * ESP32C3 が保存する (このアプリは, パスワードを保存しない). テザリングの SSID は, Android が
  * アプリに教えないので, 手で入力する.
+ * (関数が多いのは, Android が呼ぶ, 画面の決まった関数 (onCreate, メニューなど) を, 分けられないため.)
  */
+@Suppress("TooManyFunctions")
 class MainActivity : Activity() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var screen: TetherScreen
@@ -130,6 +133,20 @@ class MainActivity : Activity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         screen.blePanel.onPermissionResult(requestCode, grantResults)
+    }
+
+    /**
+     * メニュー (アプリのログを見る) を作る. 選ぶと, ログの画面 ([AppLogActivity]) を開く.
+     *
+     * @param menu メニュー
+     * @return メニューを出すので, true
+     */
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menu.add(R.string.menu_app_log).setOnMenuItemClickListener {
+            startActivity(Intent(this, AppLogActivity::class.java))
+            true
+        }
+        return true
     }
 
     /** 画面を閉じるときに, 通信を止めて, 受け取りをやめる. */
