@@ -6,7 +6,7 @@ Kotlin で Android アプリを**Android Studio を使わずに、コマンド�
 
 | 項目 | 方針 |
 |:---|:---|
-| 開発環境 | Docker (Ubuntu 24.04)。JDK、Gradle、Android SDK はイメージに入れる。ホストには Docker と、実機に転送するための adb だけを入れる |
+| 開発環境 | Docker (Ubuntu 26.04)。JDK、Gradle、Android SDK はイメージに入れる。ホストには Docker と、実機に転送するための adb だけを入れる |
 | 構成 | 2 つのモジュール。`core` (純粋な Kotlin。単体テストで、行と分岐のカバレッジ 100%) と、`app` (Android。薄い層) |
 | 品質 | 警告ゼロ (Kotlin の警告をエラーにする)。ktlint、detekt、Android Lint (警告をエラーにする)、JaCoCo、Dokka |
 | テスト | JVM 上の単体テストだけ。エミュレータは USB のホストの動作を確認できないので、置かない |
