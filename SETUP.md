@@ -73,7 +73,7 @@ scripts/cloud-docker.sh start        # Docker のデーモンを起動する
 | 場所 | 内容 |
 |:---|:---|
 | `core` の `SerialPort` | 送信と受信 (待ち時間つき) のインターフェース。Android の実装は `app` の `UsbCdcPort` |
-| `core` の `ShellSession` | 行を送り、プロンプト (`uart:~$ `) が現れるまで受け取る。画面の制御 (色) は取り除く。溜まっている出力は送る前に捨てる |
+| `core` の `ShellSession` | 行を送り、プロンプト (`uart:~$`) が現れるまで受け取る。画面の制御 (色) は取り除く。溜まっている出力は送る前に捨てる |
 | `core` の `TetherController` | `thermo tether "<SSID>" "<パスワード>"` → `thermo apply` → `thermo show`。戻すときは `thermo restore` → `thermo apply` → `thermo show` |
 | `core` の `WifiSettings.kt` | SSID (32 バイト以下) とパスワード (64 バイト以下) の確認。`thermo show` の解析 |
 | `core` の `streamLog` | ログを読み続けて、文字列で渡す(止めるのは取り消し)。文字の途中で切れた受信は続きを待つ。色と CR は取り除く。`ShellSession` と同時には使わない |
@@ -87,7 +87,6 @@ scripts/cloud-docker.sh start        # Docker のデーモンを起動する
 
 - 確認した: `format-fix` `format` `analyze` `build` `test` `coverage` (`core` の行と分岐が 100%) `docs`。全て成功。
 - **未確認**: 実機での USB の通信 (使用許可、CDC ACM のバルク転送。制御線を動かさなくても、シェルが応答するか)、Zephyr のシェルの引用符 (`\"` と `\\`) の扱い、日本語の SSID、テザリングへの接続、CI。
-
 
 ## ログを見る
 

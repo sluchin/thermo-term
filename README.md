@@ -4,13 +4,13 @@
 
 姉妹プロジェクト [esp32-thermo-system](https://github.com/sluchin/esp32-thermo-system) (ESP32C3 の温度センサのノードと、ゲートウェイ) の、設定用の端末 (terminal) です。データを見るアプリは [thermon](https://github.com/sluchin/thermon) です。
 
-```
+```text
 スマートフォン (USB ホスト) ──USB Type-C──> ESP32C3 (USB シリアル/JTAG。Zephyr のシェル)
    thermo tether "<SSID>" "<パスワード>"   元の SSID とパスワードを保存して、テザリングのものに切り替える
    thermo restore                          元の SSID とパスワードに戻す
    thermo apply                            接続をやり直す
    thermo show                             今の状態 (パスワードは伏せ字)
-```
+```text
 
 **Android Studio は使いません。** ビルド、テスト、整形、静的解析、ドキュメントの生成は全てコマンドラインで、Docker の中で実行します ([thermon](https://github.com/sluchin/thermon) と同じ方針です)。
 
@@ -42,7 +42,7 @@
 ```properties
 thermoterm.ssid=my-phone
 thermoterm.psk=my-password
-```
+```text
 
 `-Pthermoterm.ssid=...` `-Pthermoterm.psk=...` でも渡せます。**値は APK に平文で入る**ので、その APK を配布しないでください。
 
@@ -54,14 +54,14 @@ thermoterm.psk=my-password
 
 ## プロジェクト構成
 
-```
+```text
 core/    純粋な Kotlin (Android に依存しない). シェルとの通信, 切り替えの手順, 入力の確認. 単体テストで, 行と分岐のカバレッジ 100%
 app/     Android アプリ. USB (CDC ACM) の通信, 画面, 使用許可だけの, 薄い層
 config/  detekt (静的解析) の設定
 gradle/  版カタログ (libs.versions.toml) と, Gradle ラッパー
 scripts/ クラウドのセッションで Docker を使う補助, Maven のミラーの設定
 .github/ GitHub Actions (CI と, ドキュメントの公開)
-```
+```text
 
 ## ビルド方法
 
@@ -76,7 +76,7 @@ docker compose run --rm format    # 整形の確認 (format-fix で、書き換�
 docker compose run --rm analyze   # 静的解析 (detekt と Android Lint)
 docker compose run --rm docs      # ドキュメント (Dokka): core/build/dokka/html/index.html
 docker compose run --rm clean     # 生成物を消す
-```
+```text
 
 クラウドのセッション (claude.ai/code) では、`docker compose run --rm <サービス>` の代わりに、`scripts/cloud-docker.sh run <サービス>` を使います ([SETUP.md](SETUP.md))。
 
