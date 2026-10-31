@@ -14,7 +14,7 @@
 
 **Android Studio は使いません。** ビルド、テスト、整形、静的解析、ドキュメントの生成は全てコマンドラインで、Docker の中で実行します ([thermon](https://github.com/sluchin/thermon) と同じ方針です)。
 
-> **状態**: アプリ (`core` と `app`) と、ファームウェアの `thermo tether` / `thermo restore` を実装しました。単体テストは Zephyr のシェルを真似る偽の機器で行います。**実機 (USB の通信、ESP32C3 のシェルの応答、テザリングへの接続) では、まだ確認していません** ([SETUP.md](SETUP.md))。
+> **状態**: アプリ (`core` と `app`) と、ファームウェアの `thermo tether` / `thermo restore` を実装しました。単体テストは Zephyr のシェルを真似る偽の機器で行います。**実機 (USB の通信、ESP32C3 のシェルの応答、テザリングへの接続) では、まだ確認していません** ([SETUP.md](docs/setup.md))。
 
 ## 使い方
 
@@ -78,7 +78,7 @@ docker compose run --rm docs      # ドキュメント (Dokka): core/build/dokka
 docker compose run --rm clean     # 生成物を消す
 ```text
 
-クラウドのセッション (claude.ai/code) では、`docker compose run --rm <サービス>` の代わりに、`scripts/cloud-docker.sh run <サービス>` を使います ([SETUP.md](SETUP.md))。
+クラウドのセッション (claude.ai/code) では、`docker compose run --rm <サービス>` の代わりに、`scripts/cloud-docker.sh run <サービス>` を使います ([SETUP.md](docs/setup.md))。
 
 実機に入れるにはホストの adb で `adb install -r app/build/outputs/apk/debug/thermo-term-*-debug.apk` です。
 

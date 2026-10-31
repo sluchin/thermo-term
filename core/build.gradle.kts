@@ -67,5 +67,6 @@ dokka {
     }
     dokkaPublications.html {
         failOnWarning.set(true)
+        outputDirectory.set(layout.projectDirectory.dir("../build/docs/html"))
     }
 }
