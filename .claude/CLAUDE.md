@@ -9,7 +9,7 @@ Kotlin で作る Android アプリ。スマートフォンと ESP32C3 (姉妹プ
    thermo show                                              (今の状態。パスワードは伏せ字)
 ```
 
-**Android Studio は使わない。** ビルド、テスト、整形、静的解析、ドキュメントの生成は全てコマンドラインで、Docker の中で実行する。環境構築の詳細と、検証の記録は `SETUP.md`。
+**Android Studio は使わない。** ビルド、テスト、整形、静的解析、ドキュメントの生成は全てコマンドラインで、Docker の中で実行する。環境構築の詳細と、検証の記録は `docs/setup.md`。
 
 ## コマンド
 
@@ -17,7 +17,7 @@ Kotlin で作る Android アプリ。スマートフォンと ESP32C3 (姉妹プ
 
 ### Docker (推奨)
 - `docker compose run` には必ず `--rm` を付ける (終わったコンテナを残さないため)。
-- `UID` と `GID` をシェルでエクスポートしておく (生成物が root 所有にならないように。`SETUP.md` の「2. ホストのユーザー ID を環境変数にエクスポートする」)。
+- `UID` と `GID` をシェルでエクスポートしておく (生成物が root 所有にならないように。`docs/setup.md` の「2. ホストのユーザー ID を環境変数にエクスポートする」)。
 - イメージのビルド: `docker compose build` (`Dockerfile` を変えたときも)
 - ビルド (デバッグ APK): `docker compose run --rm build` (`app/build/outputs/apk/debug/thermo-term-<版>-debug.apk`)
 - 単体テスト: `docker compose run --rm test`
@@ -29,11 +29,11 @@ Kotlin で作る Android アプリ。スマートフォンと ESP32C3 (姉妹プ
 - 開発シェル: `docker compose run --rm dev`
 
 ### 実機への転送 (ホストの adb)
-- `adb install -r app/build/outputs/apk/debug/thermo-term-*-debug.apk` (ホストに adb を入れる。`SETUP.md` の「実機へのインストール」)
+- `adb install -r app/build/outputs/apk/debug/thermo-term-*-debug.apk` (ホストに adb を入れる。`docs/setup.md` の「実機へのインストール」)
 
 ### クラウドのセッション (claude.ai/code) で Docker を使うとき
 
-**通常の `docker compose build` と `docker compose run` は使わない** (curl の終了コード 60 で失敗する。理由は下)。代わりに、`scripts/cloud-docker.sh` を使う (`SETUP.md` の「クラウドのセッション」)。
+**通常の `docker compose build` と `docker compose run` は使わない** (curl の終了コード 60 で失敗する。理由は下)。代わりに、`scripts/cloud-docker.sh` を使う (`docs/setup.md` の「クラウドのセッション」)。
 
 ```bash
 scripts/cloud-docker.sh build          # 開発用のイメージ (thermo-term-dev) を作る (プロキシと CA の設定を足す)
@@ -59,7 +59,7 @@ scripts/cloud-docker.sh start          # Docker のデーモンを起動する (
 - `app/`: Android。USB の CDC ACM の通信 (`UsbCdcPort`)、画面 (`TetherScreen`)、使用許可と接続 (`MainActivity`) だけの、薄い層 (UI は単体テストの対象外)。
 - `gradle/libs.versions.toml`: ライブラリとプラグインの版 (版カタログ)。版を変えるときはここだけ。
 - `config/detekt/detekt.yml`: detekt の規則 (既定に上書きするものだけ)。
-- `Dockerfile` / `docker-compose.yml` / `scripts/` (クラウドのセッションで Docker を使う補助 `cloud-docker.sh`、Maven のミラーの設定): 開発環境。`.github/`: GitHub Actions。`SETUP.md`: 環境構築と、検証の記録。
+- `Dockerfile` / `docker-compose.yml` / `scripts/` (クラウドのセッションで Docker を使う補助 `cloud-docker.sh`、Maven のミラーの設定): 開発環境。`.github/`: GitHub Actions。`docs/setup.md`: 環境構築と、検証の記録。
 - ファームウェア側の `thermo tether` と `thermo restore` は esp32-thermo-system の `app/common/cfg_shell.c` と `cfg.c` にある。**元の SSID とパスワードはファームウェアがフラッシュに保存する** (パスワードは基板の外に出ない)。
 
 ## 秘密情報
@@ -79,7 +79,7 @@ scripts/cloud-docker.sh start          # Docker のデーモンを起動する (
 
 ## コーディング規約
 
-ktlint (Kotlin 公式のスタイル) と、detekt (既定の規則) に従う。迷ったら、ツールが正しい。Kotlin 公式のコーディング規約の日本語訳と、このプロジェクトでの違いは `CODING_STYLE.md`。
+ktlint (Kotlin 公式のスタイル) と、detekt (既定の規則) に従う。迷ったら、ツールが正しい。Kotlin 公式のコーディング規約の日本語訳と、このプロジェクトでの違いは `docs/coding_style.md`。
 
 - **インデントは空白 4 つ。1 行は 100 桁まで** (`.editorconfig`)。整形は `format-fix` が行う (手で、整形しない)。
 - **ファイルの先頭に著作権とライセンスを書く**:
@@ -103,7 +103,7 @@ ktlint (Kotlin 公式のスタイル) と、detekt (既定の規則) に従う�
 
 ## 開発フロー
 
-1. Push 時に GitHub Actions (`.github/workflows/build.yml`) が開発用の Docker イメージ (ローカルと同じ環境) で `docker compose` のサービスを実行する (`SETUP.md` の「CI (GitHub Actions)」)。
+1. Push 時に GitHub Actions (`.github/workflows/build.yml`) が開発用の Docker イメージ (ローカルと同じ環境) で `docker compose` のサービスを実行する (`docs/setup.md` の「CI (GitHub Actions)」)。
    - `check` ジョブ: `build` / `test` / `coverage` / `format` / `analyze` をサービスごとに実行する。失敗したら、ジョブが失敗する。実行のログをアーティファクト (`<サービス名>_log`。`build_log` など) として保存する (失敗したときも保存する)。**APK はアーティファクトに置かない。**
    - `docs` ジョブ: `docs` (Dokka の HTML。警告があれば失敗する)。生成したドキュメントをアーティファクト `docs` と、ログ `docs_log` に保存する。
    - `deploy-docs` ジョブ: main への push のときだけ、ドキュメントを GitHub Pages に公開する (リポジトリの Settings > Pages > Source を「GitHub Actions」にしておく)。
@@ -123,9 +123,9 @@ ktlint (Kotlin 公式のスタイル) と、detekt (既定の規則) に従う�
   6. `docker compose run --rm build` (APK のビルド)
   7. `docker compose run --rm docs` (ドキュメント。KDoc を変えたときは必ず)
 - ビルドや、テストを実行できなかったときはそのことを報告する (成功したとは書かない)。
-- **例外**: 変更が `SETUP.md`、`README.md`、`.claude/CLAUDE.md` などの文書だけの場合はビルドしない。
-- ビルドやコマンド、ツールの版を変えたら、`SETUP.md` も更新する (版は実際に使うものだけを書く)。
-- ファイルを追加したら、Gradle の設定 (`build.gradle.kts`) と、必要なら、`SETUP.md` の構成も更新する。
+- **例外**: 変更が `docs/setup.md`、`README.md`、`.claude/CLAUDE.md` などの文書だけの場合はビルドしない。
+- ビルドやコマンド、ツールの版を変えたら、`docs/setup.md` も更新する (版は実際に使うものだけを書く)。
+- ファイルを追加したら、Gradle の設定 (`build.gradle.kts`) と、必要なら、`docs/setup.md` の構成も更新する。
 
 ### タスク完了時の動作
 
@@ -142,7 +142,7 @@ ktlint (Kotlin 公式のスタイル) と、detekt (既定の規則) に従う�
 - **時刻と乱数**: 外の状態は引数で渡して、固定する (今の `core` は時刻を使わない。受信の待ち時間も、回数で数える)。実際の時計を使う動作は別に 1 つだけ、テストする。
 - **実機での確認は別に必要**: USB の通信 (使用許可、CDC ACM のバルク転送、ESP32C3 のシェルの応答)、WiFi のテザリングへの接続、画面の表示は単体テストでは、確認できない。
 
-## 落とし穴 (検証で分かったこと。詳細は SETUP.md)
+## 落とし穴 (検証で分かったこと。詳細は docs/setup.md)
 
 - `compileSdk` は 37 (thermon と同じ SDK のイメージを使う)。`buildToolsVersion` は `37.0.0` に固定する (コンテナの SDK は読み取り専用)。足りない SDK のコンポーネントは `Dockerfile` に足して、イメージを作り直す。
 - `.gitignore` は `*.jar` を無視する。Gradle ラッパーの `gradle-wrapper.jar` だけ、例外にしてある。
@@ -178,3 +178,4 @@ ktlint (Kotlin 公式のスタイル) と、detekt (既定の規則) に従う�
 ## 開発ルール
 
 - Markdown (`*.md`) の日本語の文章は、句読点に「、」「。」を使う (「,」「.」は使わない)。インラインコード・コードブロック・URL・ファイル名・数値 (`1.2.0`、`1,000`) は対象外。見出しや番号付きリストの「1.」の形は変えない。`docs/` の生成物と、この `CLAUDE.md` は対象外。
+- Markdown (`*.md`。この `CLAUDE.md` を除く) には、AI の目線の記述を書かない。読み手 (人) に向けて、事実、仕様、手順だけを書く。「承認されたら実装します」「教えてください」「提案します」のような、AI からの依頼や約束、作業の報告、「Claude が」のような書き手の記述は、会話で伝えて、ファイルには残さない。

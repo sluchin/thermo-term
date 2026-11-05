@@ -1,6 +1,6 @@
 # 開発環境のセットアップ
 
-Kotlin で Android アプリを**Android Studio を使わずに、コマンドラインだけで**開発するための手順と、検証の記録です。ビルド、テスト、整形、静的解析、ドキュメントの生成は Docker の中で実行します。環境は姉妹プロジェクトの [thermon](https://github.com/sluchin/thermon) と同じです (Dockerfile、版、`scripts/`、CI)。thermon の `SETUP.md` により詳しい説明があります。
+Kotlin で Android アプリを**Android Studio を使わずに、コマンドラインだけで**開発するための手順と、検証の記録です。ビルド、テスト、整形、静的解析、ドキュメントの生成は Docker の中で実行します。環境は姉妹プロジェクトの [thermon](https://github.com/sluchin/thermon) と同じです (Dockerfile、版、`scripts/`、CI)。thermon の `docs/setup.md` により詳しい説明があります。
 
 ## 方針
 
@@ -58,7 +58,7 @@ scripts/cloud-docker.sh run <サービス>  # build / test / coverage / format /
 scripts/cloud-docker.sh start        # Docker のデーモンを起動する
 ```
 
-通信できるドメインは環境の「Network access」で決まります (`dl.google.com` と `maven-central.storage-download.googleapis.com` が要ります)。詳しくは thermon の `SETUP.md` と `.claude/CLAUDE.md` です。
+通信できるドメインは環境の「Network access」で決まります (`dl.google.com` と `maven-central.storage-download.googleapis.com` が要ります)。詳しくは thermon の `docs/setup.md` と `.claude/CLAUDE.md` です。
 
 ## SSID とパスワードの設定
 
