@@ -5,7 +5,7 @@ Kotlin で Android アプリを**Android Studio を使わずに、コマンド�
 ## 方針
 
 | 項目 | 方針 |
-|:---|:---|
+| :--- | :--- |
 | 開発環境 | Docker (Ubuntu 26.04)。JDK、Gradle、Android SDK はイメージに入れる。ホストには Docker と、実機に転送するための adb だけを入れる |
 | 構成 | 2 つのモジュール。`core` (純粋な Kotlin。単体テストで、行と分岐のカバレッジ 100%) と、`app` (Android。薄い層) |
 | 品質 | 警告ゼロ (Kotlin の警告をエラーにする)。ktlint、detekt、Android Lint (警告をエラーにする)、JaCoCo、Dokka |
@@ -17,7 +17,7 @@ Kotlin で Android アプリを**Android Studio を使わずに、コマンド�
 版は `gradle/libs.versions.toml` にまとめてあります。
 
 | ツール | 版 |
-|:---|:---|
+| :--- | :--- |
 | JDK | 17 |
 | Gradle | 9.8.1 (ラッパー) |
 | Android Gradle Plugin | 9.4.1 |
@@ -39,7 +39,7 @@ docker compose run --rm dev         # 開発シェル
 ```
 
 | サービス | 内容 |
-|:---|:---|
+| :--- | :--- |
 | `build` | デバッグ APK (`app/build/outputs/apk/debug/thermo-term-<版>-debug.apk`) |
 | `test` | 単体テスト |
 | `coverage` | `core` の行と分岐が 100% でなければ失敗 |
@@ -71,7 +71,7 @@ scripts/cloud-docker.sh start        # Docker のデーモンを起動する
 ## アプリの仕組み
 
 | 場所 | 内容 |
-|:---|:---|
+| :--- | :--- |
 | `core` の `SerialPort` | 送信と受信 (待ち時間つき) のインターフェース。Android の実装は `app` の `UsbCdcPort` |
 | `core` の `ShellSession` | 行を送り、プロンプト (`uart:~$`) が現れるまで受け取る。画面の制御 (色) は取り除く。溜まっている出力は送る前に捨てる |
 | `core` の `TetherController` | `thermo tether "<SSID>" "<パスワード>"` → `thermo apply` → `thermo show`。戻すときは `thermo restore` → `thermo apply` → `thermo show` |
