@@ -10,7 +10,7 @@
    thermo restore                          元の SSID とパスワードに戻す
    thermo apply                            接続をやり直す
    thermo show                             今の状態 (パスワードは伏せ字)
-```text
+```
 
 **Android Studio は使いません。** ビルド、テスト、整形、静的解析、ドキュメントの生成は全てコマンドラインで、Docker の中で実行します ([thermon](https://github.com/sluchin/thermon) と同じ方針です)。
 
@@ -42,7 +42,7 @@
 ```properties
 thermoterm.ssid=my-phone
 thermoterm.psk=my-password
-```text
+```
 
 `-Pthermoterm.ssid=...` `-Pthermoterm.psk=...` でも渡せます。**値は APK に平文で入る**ので、その APK を配布しないでください。
 
@@ -61,7 +61,7 @@ config/  detekt (静的解析) の設定
 gradle/  版カタログ (libs.versions.toml) と, Gradle ラッパー
 scripts/ クラウドのセッションで Docker を使う補助, Maven のミラーの設定
 .github/ GitHub Actions (CI と, ドキュメントの公開)
-```text
+```
 
 ## ビルド方法
 
@@ -76,7 +76,7 @@ docker compose run --rm format    # 整形の確認 (format-fix で, 書き換�
 docker compose run --rm analyze   # 静的解析 (detekt と Android Lint)
 docker compose run --rm docs      # ドキュメント (Dokka): core/build/dokka/html/index.html
 docker compose run --rm clean     # 生成物を消す
-```text
+```
 
 クラウドのセッション (claude.ai/code) では、`docker compose run --rm <サービス>` の代わりに、`scripts/cloud-docker.sh run <サービス>` を使います ([setup.md](docs/setup.md))。
 
