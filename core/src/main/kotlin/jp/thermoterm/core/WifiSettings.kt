@@ -34,7 +34,7 @@ enum class WifiInputError {
  *
  * @param ssid テザリングの SSID
  * @param psk テザリングのパスワード (空でもよい)
- * @return 誤りがあれば, その種類. なければ null
+ * @return 誤りがあればその種類. なければ null
  */
 fun validateWifi(
     ssid: String,
@@ -85,7 +85,7 @@ fun parseStatus(reply: String): DeviceStatus? {
 }
 
 /**
- * 「項目名: 値」の形の行から, 値を取り出す.
+ * 「項目名: 値」の形の行から値を取り出す.
  *
  * @param line 1 行
  * @param label 項目名 (コロンを含む)

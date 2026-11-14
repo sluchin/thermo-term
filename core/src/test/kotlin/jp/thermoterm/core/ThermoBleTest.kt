@@ -27,7 +27,7 @@ class ThermoBleTest {
         assertEquals(ThermoReading(24.0, 49.0), parseThermoReading(bytes(0xF0, 0x00, 0xEA, 0x01)))
     }
 
-    /** 気圧つきの 6 バイト (気圧は使わない) も, 温度と湿度を読める. */
+    /** 気圧つきの 6 バイト (気圧は使わない) も温度と湿度を読める. */
     @Test
     fun parsesValueWithPressure() {
         assertEquals(
@@ -42,7 +42,7 @@ class ThermoBleTest {
         assertEquals(ThermoReading(-5.0, 10.0), parseThermoReading(bytes(0xCE, 0xFF, 0x64, 0x00)))
     }
 
-    /** 湿度が 0xFFFF なら, 湿度なし. */
+    /** 湿度が 0xFFFF なら湿度なし. */
     @Test
     fun parsesNoHumidity() {
         assertEquals(ThermoReading(23.5, null), parseThermoReading(bytes(0xEB, 0x00, 0xFF, 0xFF)))

@@ -22,7 +22,7 @@ private const val LAST_CONTROL = 0x1F
 private const val DELETE = 0x7F
 
 /**
- * シェルの出力から, 画面の制御 (色など) を取り除いて, 改行を統一する.
+ * シェルの出力から, 画面の制御 (色など) を取り除いて改行を統一する.
  *
  * @param text シェルの出力
  * @return 制御を取り除いた文字列 (改行は LF だけ. CR は消す)
@@ -33,7 +33,7 @@ fun cleanShellOutput(text: String): String =
 /**
  * 文字列を, Zephyr のシェルの 1 つの引数として, 引用符で囲む.
  *
- * 空白を含む SSID も, 1 つの引数になる. 引用符とバックスラッシュは, バックスラッシュで打ち消す.
+ * 空白を含む SSID も 1 つの引数になる. 引用符とバックスラッシュは, バックスラッシュで打ち消す.
  *
  * @param value 引数の文字列 (制御文字を含まないこと)
  * @return 引用符で囲んだ文字列

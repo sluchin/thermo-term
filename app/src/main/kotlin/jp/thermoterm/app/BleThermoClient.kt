@@ -55,10 +55,10 @@ enum class BleState {
     /** 見つけたノードにつないでいる. */
     CONNECTING,
 
-    /** つながって, 通知を受け取っている. */
+    /** つながって通知を受け取っている. */
     CONNECTED,
 
-    /** つながったあとで, 切れた. */
+    /** つながったあとで切れた. */
     DISCONNECTED,
 
     /** ノードのサービスが見つからないなど, 通信に失敗した. */
@@ -159,7 +159,7 @@ class BleThermoClient(
             }
         }
 
-    /** ノードを探して, 見つかったらつなぐ. すでに動いているときは何もしない. */
+    /** ノードを探して見つかったらつなぐ. すでに動いているときは何もしない. */
     fun start() {
         val adapter = context.getSystemService(BluetoothManager::class.java)?.adapter
         val scanner = adapter?.takeIf { it.isEnabled }?.bluetoothLeScanner
@@ -196,7 +196,7 @@ class BleThermoClient(
     }
 
     /**
-     * 探すのをやめて, 状態を通知する.
+     * 探すのをやめて状態を通知する.
      *
      * @param state 通知する状態
      */
@@ -251,7 +251,7 @@ class BleThermoClient(
     }
 
     /**
-     * 接続を閉じて, 状態を通知する.
+     * 接続を閉じて状態を通知する.
      *
      * @param state 通知する状態
      */

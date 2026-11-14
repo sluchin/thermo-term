@@ -13,7 +13,7 @@ import kotlin.test.assertTrue
 
 /** [cleanShellOutput], [quoteShellArgument], [hasControlCharacter] の単体テスト. */
 class ShellTextTest {
-    /** 画面の制御 (色) を取り除いて, CR を消す. */
+    /** 画面の制御 (色) を取り除いて CR を消す. */
     @Test
     fun cleanShellOutputRemovesAnsiAndCarriageReturns() {
         assertEquals("a\nb\nc", cleanShellOutput("\u001B[1;32ma\u001B[m\r\nb\nc\r"))

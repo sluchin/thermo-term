@@ -56,7 +56,7 @@ class BlePanel(
     }
 
     /**
-     * 権限を求めた結果を受け取って, 許可されていれば, 始める.
+     * 権限を求めた結果を受け取って, 許可されていれば始める.
      *
      * @param requestCode 要求の番号
      * @param grantResults 権限ごとの結果
@@ -78,7 +78,7 @@ class BlePanel(
     /** 画面を閉じるときに, 探すのもつなぐのもやめる. */
     fun release() = client.stop()
 
-    /** 押すたびに, 始める (権限がなければ, 求める) か, 止める. */
+    /** 押すたびに, 始める (権限がなければ求める) か, 止める. */
     private fun toggle() {
         if (running) {
             client.stop()

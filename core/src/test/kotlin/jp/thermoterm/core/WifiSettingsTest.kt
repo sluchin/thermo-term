@@ -56,7 +56,7 @@ class WifiSettingsTest {
         assertEquals(DeviceStatus("home-ap", true, null, true), status)
     }
 
-    /** 切り替え済みなら, 元の SSID. パスワードが空なら, hasPsk は false. */
+    /** 切り替え済みなら元の SSID. パスワードが空なら hasPsk は false. */
     @Test
     fun parseStatusReadsBackup() {
         val status = parseStatus("ssid: phone\npsk: (empty)\ntether backup: home-ap\n")

@@ -61,7 +61,7 @@ class TetherControllerTest {
             assertEquals(ActionResult.Success(DeviceStatus("my phone", true, "home", true)), result)
         }
 
-    /** 入力に誤りがあれば, 何も送らない. */
+    /** 入力に誤りがあれば何も送らない. */
     @Test
     fun tetherRejectsInvalidInput() =
         runTest {

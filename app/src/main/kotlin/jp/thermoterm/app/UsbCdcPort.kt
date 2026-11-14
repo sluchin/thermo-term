@@ -39,7 +39,7 @@ class UsbCdcPort private constructor(
 ) : SerialPort,
     Closeable {
     /**
-     * データを送る (呼び出したスレッドで, 終わるまで待つ).
+     * データを送る (呼び出したスレッドで終わるまで待つ).
      *
      * @param data 送るデータ
      * @throws IOException 送れなかった

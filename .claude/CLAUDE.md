@@ -3,10 +3,10 @@
 Kotlin で作る Android アプリ。スマートフォンと ESP32C3 (姉妹プロジェクト [esp32-thermo-system](https://github.com/sluchin/esp32-thermo-system) のノードかゲートウェイ) を USB ケーブル (Type-C) でつなぎ、ESP32C3 の WiFi の SSID とパスワードをスマートフォンの WiFi テザリング (ホットスポット) のものに書き換える。**元の SSID とパスワードは ESP32C3 が保存して**、あとで元に戻せる。
 
 ```
-スマートフォン (USB ホスト) ──USB Type-C──> ESP32C3 (USB シリアル/JTAG = CDC ACM。Zephyr のシェル)
-   thermo tether "<SSID>" "<パスワード>" → thermo apply    (元の設定を保存して、テザリングに切り替える)
+スマートフォン (USB ホスト) ──USB Type-C──> ESP32C3 (USB シリアル/JTAG = CDC ACM. Zephyr のシェル)
+   thermo tether "<SSID>" "<パスワード>" → thermo apply    (元の設定を保存して, テザリングに切り替える)
    thermo restore → thermo apply                           (元の SSID とパスワードに戻す)
-   thermo show                                              (今の状態。パスワードは伏せ字)
+   thermo show                                              (今の状態. パスワードは伏せ字)
 ```
 
 **Android Studio は使わない。** ビルド、テスト、整形、静的解析、ドキュメントの生成は全てコマンドラインで、Docker の中で実行する。環境構築の詳細と、検証の記録は `docs/setup.md`。
@@ -37,8 +37,8 @@ Kotlin で作る Android アプリ。スマートフォンと ESP32C3 (姉妹プ
 
 ```bash
 scripts/cloud-docker.sh build          # 開発用のイメージ (thermo-term-dev) を作る (プロキシと CA の設定を足す)
-scripts/cloud-docker.sh run build      # docker compose run --rm build (test、coverage、format、analyze、docs も同じ)
-scripts/cloud-docker.sh start          # Docker のデーモンを起動する (起動済みなら、何もしない)
+scripts/cloud-docker.sh run build      # docker compose run --rm build (test, coverage, format, analyze, docs も同じ)
+scripts/cloud-docker.sh start          # Docker のデーモンを起動する (起動済みなら, 何もしない)
 ```
 
 - クラウドの VM には Docker (`dockerd`) が入っているが、デーモンは自動では起動しない。SessionStart フック (`.claude/settings.json`) がセッションの開始のときに、`scripts/cloud-docker.sh hook` で起動する (クラウドのときだけ)。起動していないときは `scripts/cloud-docker.sh start`。ログは `/tmp/dockerd.log`。
@@ -177,5 +177,10 @@ ktlint (Kotlin 公式のスタイル) と、detekt (既定の規則) に従う�
 
 ## 開発ルール
 
-- Markdown (`*.md`) の日本語の文章は、句読点に「、」「。」を使う (「,」「.」は使わない)。インラインコード・コードブロック・URL・ファイル名・数値 (`1.2.0`、`1,000`) は対象外。見出しや番号付きリストの「1.」の形は変えない。`docs/` の生成物と、この `CLAUDE.md` は対象外。
+- Markdown (`*.md`) の日本語の文章は、句読点に「、」「。」を使う (「,」「.」は使わない)。インラインコード・コードブロック・URL・ファイル名・数値 (`1.2.0`、`1,000`) は対象外。
+- Markdown のコードブロック (3 つのバッククォートで囲んだ部分) の中の日本語は、ソースのコメントと同じく、句読点に「, 」「.」を使う。記号は、なるべく半角にする (`()` `""` `->` `<-` `~` `x` `>=` など)。罫線の図 (`─` `│` `▶` など) の中の矢印は、図がずれるので、そのままにする。見出しや番号付きリストの「1.」の形は変えない。`docs/` の生成物と、この `CLAUDE.md` は対象外。
 - Markdown (`*.md`。この `CLAUDE.md` を除く) には、AI の目線の記述を書かない。読み手 (人) に向けて、事実、仕様、手順だけを書く。「承認されたら実装します」「教えてください」「提案します」のような、AI からの依頼や約束、作業の報告、「Claude が」のような書き手の記述は、会話で伝えて、ファイルには残さない。
+- Markdown (`*.md`) を書く・直すときは、本多勝一著『日本語の作文技術』の原則 (修飾語の順序、ねじれのない係り受け、簡潔な一文一義など) を、厳密に守って、ドキュメントをブラッシュアップする。
+  - 修飾語は、長いものを前に、短いものを後ろに置く。句点・読点は、係り受けを区切る所だけに打つ (余分な読点を入れない)。
+  - 主語と述語を対応させて、ねじれをなくす。1 つの文には、1 つのことだけを書く (長い文は、分ける)。
+  - 冗長な説明、くり返し、読み手の役に立たない補足は、削る。

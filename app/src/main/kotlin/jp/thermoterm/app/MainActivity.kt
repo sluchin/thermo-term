@@ -41,7 +41,7 @@ private const val ACTION_USB_PERMISSION = "jp.thermoterm.app.USB_PERMISSION"
  *
  * スマートフォンと ESP32C3 を, USB ケーブル (Type-C) でつなぐ. 元の SSID とパスワードは,
  * ESP32C3 が保存する (このアプリは, パスワードを保存しない). テザリングの SSID は, Android が
- * アプリに教えないので, 手で入力する.
+ * アプリに教えないので手で入力する.
  * (関数が多いのは, Android が呼ぶ, 画面の決まった関数 (onCreate, メニューなど) を, 分けられないため.)
  */
 @Suppress("TooManyFunctions")
@@ -149,7 +149,7 @@ class MainActivity : Activity() {
         return true
     }
 
-    /** 画面を閉じるときに, 通信を止めて, 受け取りをやめる. */
+    /** 画面を閉じるときに, 通信を止めて受け取りをやめる. */
     override fun onDestroy() {
         unregisterReceiver(usbReceiver)
         screen.blePanel.release()
@@ -158,7 +158,7 @@ class MainActivity : Activity() {
         super.onDestroy()
     }
 
-    /** 機器を探して, 使う許可を求める (許可があれば, すぐに開く). */
+    /** 機器を探して, 使う許可を求める (許可があればすぐに開く). */
     private fun connect() {
         val manager = getSystemService(UsbManager::class.java)
         val device = UsbCdcPort.findDevice(manager)
@@ -191,7 +191,7 @@ class MainActivity : Activity() {
         launchAction { control -> screen.showStatus(control.readStatus()) }
     }
 
-    /** ポートを閉じて, 未接続の表示に戻す. */
+    /** ポートを閉じて未接続の表示に戻す. */
     private fun disconnect() {
         AppLog.d(TAG) { "Disconnecting (port open: ${port != null})" }
         logJob?.cancel()
@@ -256,7 +256,7 @@ class MainActivity : Activity() {
     }
 
     /**
-     * 入力したコマンドをそのまま機器に送る (応答はログに出る. ログが止まっていれば, 始める).
+     * 入力したコマンドをそのまま機器に送る (応答はログに出る. ログが止まっていれば始める).
      *
      * @param command コマンド
      */

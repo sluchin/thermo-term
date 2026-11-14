@@ -18,7 +18,7 @@ const val DEFAULT_READ_TIMEOUT_MILLIS = 100
 const val DEFAULT_MAX_IDLE_READS = 30
 
 /**
- * 機器のシェル (Zephyr の shell) にコマンドを送って, 応答を受け取る.
+ * 機器のシェル (Zephyr の shell) にコマンドを送って応答を受け取る.
  *
  * コマンドの終わりはプロンプトが現れることで分かる.
  *
@@ -34,9 +34,9 @@ class ShellSession(
     private val maxIdleReads: Int = DEFAULT_MAX_IDLE_READS,
 ) {
     /**
-     * コマンドを実行して, 応答を返す.
+     * コマンドを実行して応答を返す.
      *
-     * 先に, 溜まっている出力 (起動のログなど) を捨ててから, コマンドを送る.
+     * 先に, 溜まっている出力 (起動のログなど) を捨ててからコマンドを送る.
      * 応答には, 入力の反響 (エコー) が含まれる. パスワードを含むコマンドの応答は, 画面に出さないこと.
      *
      * @param command コマンド (改行は付けない)

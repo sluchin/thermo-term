@@ -26,7 +26,7 @@ class ShellSessionTest {
             assertEquals(listOf("thermo show"), device.written)
         }
 
-    /** 溜まっている出力 (起動のログ) は捨ててから, 送る. */
+    /** 溜まっている出力 (起動のログ) は捨ててから送る. */
     @Test
     fun executeDiscardsPendingOutput() =
         runTest {
